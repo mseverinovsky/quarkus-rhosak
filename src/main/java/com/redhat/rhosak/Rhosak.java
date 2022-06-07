@@ -90,7 +90,9 @@ class LoginCommand implements Callable<Integer> {
     }
 }
 
-@Command(name = "kafka", mixinStandardHelpOptions = true, description = "Create, view and manage your Kafka instances", subcommands = {KafkaCreateCommand.class, KafkaListCommand.class, KafkaTopicCommand.class, KafkaDeleteCommand.class})
+@Command(name = "kafka", mixinStandardHelpOptions = true, description = "Create, view and manage your Kafka instances",
+        subcommands = {KafkaCreateCommand.class, KafkaListCommand.class,
+                KafkaTopicCommand.class, KafkaDeleteCommand.class, KafkaAclCommand.class})
 class KafkaCommand implements Callable<Integer> {
 
     @Override
@@ -188,7 +190,9 @@ class KafkaDeleteCommand implements Callable<Integer> {
     }
 }
 
-@Command(name = "acl", mixinStandardHelpOptions = true, description = "Manage Kafka ACLs for users and service accounts", subcommands = KafkaAclCreateCommand.class)
+@Command(name = "acl", mixinStandardHelpOptions = true,
+        description = "Manage Kafka ACLs for users and service accounts",
+        subcommands = KafkaAclCreateCommand.class)
 class KafkaAclCommand implements Callable<Integer> {
 
     public KafkaAclCommand() {}
@@ -199,8 +203,27 @@ class KafkaAclCommand implements Callable<Integer> {
     }
 }
 
+class CustomCommand {
+    private final ApiClient apiManagementClient;
+    private final DefaultApi managementApi;
+
+    public CustomCommand() {
+        this.apiManagementClient = KafkaManagementClient.getKafkaManagementAPIClient();
+        this.managementApi = new DefaultApi(apiManagementClient);
+    }
+
+    protected String getServerUrl() {
+        try {
+            return "https://admin-server-" + managementApi.getKafkas(null, null, null, null).getItems().get(0).getBootstrapServerHost();
+        } catch (ApiException e) {
+            throw new RuntimeException("Cannot get kafka url", e.getCause());
+        }
+    }
+
+}
+
 @Command(name = "create", mixinStandardHelpOptions = true, description = "Create a Kafka ACL")
-class KafkaAclCreateCommand implements Callable<Integer> {
+class KafkaAclCreateCommand extends CustomCommand implements Callable<Integer> {
 
     @CommandLine.Option(names = "--operation", paramLabel = "string", required = true, description = "Set the ACL operation. Choose from: \"all\", \"alter\", \"alter-configs\", \"create\", \"delete\", \"describe\", \"describe-configs\", \"read\", \"write\"")
     String operation;
@@ -218,27 +241,31 @@ class KafkaAclCreateCommand implements Callable<Integer> {
 
     @Override
     public Integer call() {
-//        AclsApi aclsApi = new AclsApi();
-//        AclBinding aclBinding =  new AclBinding();
-//        AclPermissionType permType = AclPermissionType.ALLOW;
-//
-//        aclBinding.setPermission(permType);
-//        aclBinding.setResourceName(topicResource);         // Topic instance name?
-//        aclBinding.setResourceType(AclResourceType.TOPIC); // Topic
-//        aclBinding.setPrincipal(serviceAccountClientID);   // SA client_id?
-//        aclBinding.setOperation(AclOperation.ALL);
-//        aclBinding.setPatternType(AclPatternType.LITERAL);
-//        try {
-//            aclsApi.createAcl(aclBinding);
-//
-//        } catch (com.openshift.cloud.api.kas.auth.invoker.ApiException e) {
-//            e.printStackTrace();
-//        }
+
+        AclsApi aclsApi = new AclsApi();
+        aclsApi.getApiClient().setBasePath(getServerUrl());
+
+        AclBinding aclBinding =  new AclBinding();
+        AclPermissionType permType = AclPermissionType.ALLOW;
+
+        aclBinding.setPermission(permType);                // Permission
+        aclBinding.setResourceName(topicResource);         // Topic instance name
+        aclBinding.setResourceType(AclResourceType.TOPIC); // Topic
+        aclBinding.setPrincipal("User:*");   // User:...
+        aclBinding.setOperation(AclOperation.ALL);         // Operation
+        aclBinding.setPatternType(AclPatternType.LITERAL); // Pattern Type
+        try {
+            aclsApi.createAcl(aclBinding);
+
+        } catch (com.openshift.cloud.api.kas.auth.invoker.ApiException e) {
+            e.printStackTrace();
+        }
         return 0;
     }
 }
 
-@Command(name = "topic", mixinStandardHelpOptions = true, subcommands = KafkaTopicCreateCommand.class)
+@Command(name = "topic", mixinStandardHelpOptions = true, description = "Create, describe, update, list, and delete topics",
+        subcommands = KafkaTopicCreateCommand.class)
 class KafkaTopicCommand implements Callable<Integer> {
 
     @Override
@@ -248,20 +275,20 @@ class KafkaTopicCommand implements Callable<Integer> {
 }
 
 @Command(name = "create", mixinStandardHelpOptions = true)
-class KafkaTopicCreateCommand implements Callable<Integer> {
+class KafkaTopicCreateCommand extends CustomCommand implements Callable<Integer> {
 
     private final ObjectMapper objectMapper;
     private final com.openshift.cloud.api.kas.auth.invoker.ApiClient apiInstanceClient;
-    private final ApiClient apiManagementClient;
+//    private final ApiClient apiManagementClient;
     private final TopicsApi apiInstanceTopic;
-    private final DefaultApi managementApi;
+//    private final DefaultApi managementApi;
 
     public KafkaTopicCreateCommand() {
         this.objectMapper = new ObjectMapper();
         this.apiInstanceClient = KafkaInstanceClient.getKafkaInstanceAPIClient();
-        this.apiManagementClient = KafkaManagementClient.getKafkaManagementAPIClient();
+//        this.apiManagementClient = KafkaManagementClient.getKafkaManagementAPIClient();
         this.apiInstanceTopic = new TopicsApi(apiInstanceClient);
-        this.managementApi = new DefaultApi(apiManagementClient);
+//        this.managementApi = new DefaultApi(apiManagementClient);
     }
 
     @CommandLine.Option(names = "--name", paramLabel = "string", required = true, description = "Topic name")
@@ -291,14 +318,6 @@ class KafkaTopicCreateCommand implements Callable<Integer> {
             return topic;
         } catch (com.openshift.cloud.api.kas.auth.invoker.ApiException e) {
             throw new RuntimeException(e.getMessage());
-        }
-    }
-
-    private String getServerUrl() {
-        try {
-            return "https://admin-server-" + managementApi.getKafkas(null, null, null, null).getItems().get(0).getBootstrapServerHost();
-        } catch (ApiException e) {
-            throw new RuntimeException("Cannot get kafka url", e.getCause());
         }
     }
 
