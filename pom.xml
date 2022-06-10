@@ -2,8 +2,8 @@
 <project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.ozangunalp</groupId>
-  <artifactId>rhoas-quarkus</artifactId>
+  <groupId>com.redhat.quarkus</groupId>
+  <artifactId>quarkus-rhosak</artifactId>
   <version>1.0.0-SNAPSHOT</version>
   <properties>
     <compiler-plugin.version>3.8.1</compiler-plugin.version>
@@ -15,8 +15,8 @@
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
     <quarkus.platform.version>2.9.0.Final</quarkus.platform.version>
     <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
-    <kafka-management-sdk.version>0.20.0</kafka-management-sdk.version>
-    <kafka-instance-sdk.version>0.20.2</kafka-instance-sdk.version>
+    <kafka-management-sdk.version>0.20.4</kafka-management-sdk.version>
+    <kafka-instance-sdk.version>0.20.4</kafka-instance-sdk.version>
     <keycloak-installed-adapter.version>18.0.0</keycloak-installed-adapter.version>
   </properties>
   <dependencyManagement>
