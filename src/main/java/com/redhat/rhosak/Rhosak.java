@@ -5,6 +5,8 @@
 //DEPS info.picocli:picocli:4.6.3
 //DEPS com.fasterxml.jackson.core:jackson-core:2.13.3
 //DEPS com.fasterxml.jackson.core:jackson-annotations:2.13.3
+//SOURCES RhosakFiles.java
+//SOURCES LoginCommand.java
 
 package com.redhat.rhosak;
 
@@ -51,42 +53,6 @@ public class Rhosak implements Callable<Integer> {
         int exitCode = new CommandLine(rhosak).execute(args);
 
         System.exit(exitCode);
-    }
-}
-
-@Command(name = "login", mixinStandardHelpOptions = true, description = "Login into RHOSAK")
-class LoginCommand implements Callable<Integer> {
-
-    private final ObjectMapper objectMapper;
-    private final KeycloakInstalled keycloak;
-
-    public LoginCommand() {
-        this.objectMapper = new ObjectMapper();
-        this.keycloak = KeycloakInstance.getKeycloakInstance();
-    }
-
-    @CommandLine.Option(names = "-tf, --tokens-file", paramLabel = "tokens-file", description = "File for storing obtained tokens.", defaultValue = Files.DEFAULT_CREDENTIALS_FILENAME)
-    Path tokensPath;
-
-    @Override
-    public Integer call() throws IOException {
-        try {
-            keycloak.loginDesktop();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        storeTokenResponse(keycloak);
-        return 0;
-    }
-
-    private void storeTokenResponse(KeycloakInstalled keycloak) throws IOException {
-        RhoasTokens rhoasTokens = new RhoasTokens();
-        rhoasTokens.refresh_token = keycloak.getRefreshToken();
-        rhoasTokens.access_token = keycloak.getTokenString();
-        long timeMillis = System.currentTimeMillis();
-        rhoasTokens.refresh_expiration = timeMillis + keycloak.getTokenResponse().getRefreshExpiresIn() * 1000;
-        rhoasTokens.access_expiration = timeMillis + keycloak.getTokenResponse().getExpiresIn() * 1000;
-        objectMapper.writeValue(tokensPath.toFile(), rhoasTokens);
     }
 }
 
@@ -341,7 +307,7 @@ class KafkaTopicCreateCommand extends CustomCommand implements Callable<Integer>
 
     private String rhosakApiToken() {
         try {
-            RhoasTokens tokens = objectMapper.readValue(Path.of(Files.RHOSAK_API_CREDS_FILE_NAME + ".json").toFile(), RhoasTokens.class);
+            RhoasTokens tokens = objectMapper.readValue(Path.of(RhosakFiles.RHOSAK_API_CREDS_FILE_NAME + ".json").toFile(), RhoasTokens.class);
             return tokens.access_token;
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -403,7 +369,7 @@ class ServiceAccountCreateCommand implements Callable<Integer> {
     }
 
     private void saveServiceAccountToFile(ServiceAccount serviceAccount) throws IOException {
-        Path saFile = Path.of(Files.SA_FILE_NAME + "." + fileFormat);
+        Path saFile = Path.of(RhosakFiles.SA_FILE_NAME + "." + fileFormat);
         serviceAccount.setCreatedAt(null); // otherwise .rhosak-sa file will be broken
         objectMapper.writeValue(saFile.toFile(), serviceAccount);
 
@@ -435,7 +401,7 @@ class ServiceAccountCreateCommand implements Callable<Integer> {
                     returnTypeClass
             );
 
-            Path apiTokensFile = Path.of(Files.RHOSAK_API_CREDS_FILE_NAME + "." + fileFormat);
+            Path apiTokensFile = Path.of(RhosakFiles.RHOSAK_API_CREDS_FILE_NAME + "." + fileFormat);
             RhoasTokens tokens = new RhoasTokens();
             tokens.access_token = res.get("access_token");
             objectMapper.writeValue(apiTokensFile.toFile(), tokens);
@@ -523,7 +489,7 @@ class KafkaManagementClient {
     private static RhoasTokens getStoredTokenResponse() {
         try {
             return objectMapper.readValue(
-                    Path.of(Files.DEFAULT_CREDENTIALS_FILENAME).toFile(),
+                    Path.of(RhosakFiles.DEFAULT_CREDENTIALS_FILENAME).toFile(),
                     RhoasTokens.class
             );
         } catch (Exception e) {
@@ -574,10 +540,10 @@ class KafkaInstanceClient {
 
     public static void checkTokenExpirationAndGotNewOne() {
         try {
-            RhoasTokens tokens = objectMapper.readValue(Path.of(Files.RHOSAK_API_CREDS_FILE_NAME + ".json").toFile(), RhoasTokens.class);
+            RhoasTokens tokens = objectMapper.readValue(Path.of(RhosakFiles.RHOSAK_API_CREDS_FILE_NAME + ".json").toFile(), RhoasTokens.class);
             String[] parts = tokens.access_token.split("\\.");
 
-            ServiceAccount serviceAccount = objectMapper.readValue(Path.of(Files.SA_FILE_NAME + ".json").toFile(), ServiceAccount.class);
+            ServiceAccount serviceAccount = objectMapper.readValue(Path.of(RhosakFiles.SA_FILE_NAME + ".json").toFile(), ServiceAccount.class);
             JsonNode readValue = objectMapper.readValue(decode(parts[1]), JsonNode.class);
 
             JsonNode expiration = readValue.get("exp");
@@ -605,7 +571,7 @@ class KafkaInstanceClient {
                             genericType
                     );
 
-                    Path apiTokensFile = Path.of(Files.RHOSAK_API_CREDS_FILE_NAME + ".json");
+                    Path apiTokensFile = Path.of(RhosakFiles.RHOSAK_API_CREDS_FILE_NAME + ".json");
                     tokens.access_token = res.get("access_token");
                     objectMapper.writeValue(apiTokensFile.toFile(), tokens);
                 } catch (com.openshift.cloud.api.kas.auth.invoker.ApiException e) {
@@ -664,8 +630,8 @@ class RhoasTokens {
 }
 
 class Files {
-    public static final String KEYCLOAK_CONFIG_FILE = "keycloak.json";
-    public static final String DEFAULT_CREDENTIALS_FILENAME = "credentials.json";
-    public static final String SA_FILE_NAME = System.getProperty("user.dir") + File.separator + "rhosak-sa";
-    public static final String RHOSAK_API_CREDS_FILE_NAME = System.getProperty("user.dir") + File.separator + "rhosak-api-creds";
+//    public static final String KEYCLOAK_CONFIG_FILE = "keycloak.json";
+//    public static final String DEFAULT_CREDENTIALS_FILENAME = "credentials.json";
+//    public static final String SA_FILE_NAME = System.getProperty("user.dir") + File.separator + "rhosak-sa";
+//    public static final String RHOSAK_API_CREDS_FILE_NAME = System.getProperty("user.dir") + File.separator + "rhosak-api-creds";
 }
