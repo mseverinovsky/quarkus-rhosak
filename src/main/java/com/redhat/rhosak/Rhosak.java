@@ -56,12 +56,23 @@ public class Rhosak implements Callable<Integer> {
 }
 
 class CustomCommand {
+    private final ObjectMapper objectMapper;
     private final ApiClient apiManagementClient;
     private final DefaultApi managementApi;
 
     public CustomCommand() {
+        this.objectMapper = new ObjectMapper();
         this.apiManagementClient = KafkaManagementClient.getKafkaManagementAPIClient();
         this.managementApi = new DefaultApi(apiManagementClient);
+    }
+
+    protected String rhosakApiToken() {
+        try {
+            RhoasTokens tokens = objectMapper.readValue(Path.of(RhosakFiles.RHOSAK_API_CREDS_FILE_NAME + ".json").toFile(), RhoasTokens.class);
+            return tokens.getAccessToken();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     protected String getServerUrl() {
@@ -115,9 +126,9 @@ class KafkaManagementClient {
 
             // ensure token is valid for at least 30 seconds
             if (storedTokens != null && storedTokens.accessTokenIsValidFor(MIN_TOKEN_VALIDITY)) {
-                return storedTokens.access_token;
+                return storedTokens.getAccessToken();
             } else if (storedTokens != null && storedTokens.refreshTokenIsValidFor(MIN_TOKEN_VALIDITY)) {
-                keycloak.refreshToken(storedTokens.refresh_token);
+                keycloak.refreshToken(storedTokens.getRefreshToken());
                 return keycloak.getTokenString();
             } else {
                 keycloak.loginDesktop();
@@ -150,10 +161,11 @@ class KafkaInstanceClient {
         return kafkaInstanceAPIClient;
     }
 
-    public static void checkTokenExpirationAndGotNewOne() {
+    public static String checkTokenExpirationAndGetNewOne() {
+        String accessToken;
         try {
             RhoasTokens tokens = objectMapper.readValue(Path.of(RhosakFiles.RHOSAK_API_CREDS_FILE_NAME + ".json").toFile(), RhoasTokens.class);
-            String[] parts = tokens.access_token.split("\\.");
+            String[] parts = tokens.getAccessToken().split("\\.");
 
             ServiceAccount serviceAccount = objectMapper.readValue(Path.of(RhosakFiles.SA_FILE_NAME + ".json").toFile(), ServiceAccount.class);
             JsonNode readValue = objectMapper.readValue(decode(parts[1]), JsonNode.class);
@@ -184,15 +196,20 @@ class KafkaInstanceClient {
                     );
 
                     Path apiTokensFile = Path.of(RhosakFiles.RHOSAK_API_CREDS_FILE_NAME + ".json");
-                    tokens.access_token = res.get("access_token");
+                    accessToken = res.get("access_token");
+                    tokens.setAccessToken(accessToken);
                     objectMapper.writeValue(apiTokensFile.toFile(), tokens);
                 } catch (com.openshift.cloud.api.kas.auth.invoker.ApiException e) {
                     throw new RuntimeException(e);
                 }
+            } else {
+                accessToken = tokens.getAccessToken();
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+
+        return accessToken;
     }
 
     private static String decode(String encodedString) {
@@ -227,8 +244,8 @@ class KeycloakInstance {
 
 class RhoasTokens {
 
-    public String refresh_token;
-    public String access_token;
+    public String refreshToken;
+    public String accessToken;
     public Long access_expiration;
     public Long refresh_expiration;
 
@@ -238,5 +255,21 @@ class RhoasTokens {
 
     boolean refreshTokenIsValidFor(Duration duration) {
         return (refresh_expiration) - duration.toMillis() >= System.currentTimeMillis();
+    }
+
+    public String getRefreshToken() {
+        return refreshToken;
+    }
+
+    public void setRefreshToken(String refreshToken) {
+        this.refreshToken = refreshToken;
+    }
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
     }
 }

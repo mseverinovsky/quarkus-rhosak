@@ -1,22 +1,16 @@
 package com.redhat.rhosak;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openshift.cloud.api.kas.auth.TopicsApi;
-import com.openshift.cloud.api.kas.auth.models.ConfigEntry;
-import com.openshift.cloud.api.kas.auth.models.NewTopicInput;
-import com.openshift.cloud.api.kas.auth.models.Topic;
-import com.openshift.cloud.api.kas.auth.models.TopicSettings;
+import com.openshift.cloud.api.kas.auth.models.*;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
-import java.io.IOException;
-import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 
 @Command(name = "topic", mixinStandardHelpOptions = true, description = "Create, describe, update, list, and delete topics",
-        subcommands = KafkaTopicCreateCommand.class)
+        subcommands = {KafkaTopicCreateCommand.class/*, KafkaTopicListCommand.class, KafkaTopicDeleteCommand.class*/})
 public class KafkaTopicCommand implements Callable<Integer> {
 
     @Override
@@ -30,12 +24,10 @@ class KafkaTopicCreateCommand extends CustomCommand implements Callable<Integer>
 
     private static final String DEFAULT_RETENTION_MS = "86400000"; // 24 hours in milliseconds
 
-    private final ObjectMapper objectMapper;
     private final com.openshift.cloud.api.kas.auth.invoker.ApiClient apiInstanceClient;
     private final TopicsApi apiInstanceTopic;
 
     public KafkaTopicCreateCommand() {
-        this.objectMapper = new ObjectMapper();
         this.apiInstanceClient = KafkaInstanceClient.getKafkaInstanceAPIClient();
         this.apiInstanceTopic = new TopicsApi(apiInstanceClient);
     }
@@ -49,7 +41,7 @@ class KafkaTopicCreateCommand extends CustomCommand implements Callable<Integer>
     @Override
     public Integer call() {
         try {
-            KafkaInstanceClient.checkTokenExpirationAndGotNewOne();
+            KafkaInstanceClient.checkTokenExpirationAndGetNewOne();
             System.out.println(createInstanceTopic(topicName, retentionMs));
         } catch (com.openshift.cloud.api.kas.auth.invoker.ApiException e) {
             throw new RuntimeException(e);
@@ -93,13 +85,5 @@ class KafkaTopicCreateCommand extends CustomCommand implements Callable<Integer>
         return topicInput;
     }
 
-    private String rhosakApiToken() {
-        try {
-            RhoasTokens tokens = objectMapper.readValue(Path.of(RhosakFiles.RHOSAK_API_CREDS_FILE_NAME + ".json").toFile(), RhoasTokens.class);
-            return tokens.access_token;
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
 }
 

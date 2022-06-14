@@ -103,7 +103,7 @@ class ServiceAccountCreateCommand implements Callable<Integer> {
 
             Path apiTokensFile = Path.of(RhosakFiles.RHOSAK_API_CREDS_FILE_NAME + "." + fileFormat);
             RhoasTokens tokens = new RhoasTokens();
-            tokens.access_token = res.get("access_token");
+            tokens.setAccessToken(res.get("access_token"));
             objectMapper.writeValue(apiTokensFile.toFile(), tokens);
         } catch (com.openshift.cloud.api.kas.auth.invoker.ApiException e) {
             throw new RuntimeException(e);

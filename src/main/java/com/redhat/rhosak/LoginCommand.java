@@ -39,8 +39,8 @@ public class LoginCommand implements Callable<Integer> {
 
     private void storeTokenResponse(KeycloakInstalled keycloak) throws IOException {
         RhoasTokens rhoasTokens = new RhoasTokens();
-        rhoasTokens.refresh_token = keycloak.getRefreshToken();
-        rhoasTokens.access_token = keycloak.getTokenString();
+        rhoasTokens.setRefreshToken(keycloak.getRefreshToken());
+        rhoasTokens.setAccessToken(keycloak.getTokenString());
         long timeMillis = System.currentTimeMillis();
         rhoasTokens.refresh_expiration = timeMillis + keycloak.getTokenResponse().getRefreshExpiresIn() * 1000;
         rhoasTokens.access_expiration = timeMillis + keycloak.getTokenResponse().getExpiresIn() * 1000;
