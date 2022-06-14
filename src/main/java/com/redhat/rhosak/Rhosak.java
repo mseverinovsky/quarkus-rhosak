@@ -85,7 +85,6 @@ class CustomCommand {
 
 }
 
-
 class KafkaManagementClient {
 
     private static final String API_CLIENT_BASE_PATH = "https://api.openshift.com";
@@ -244,8 +243,8 @@ class KeycloakInstance {
 
 class RhoasTokens {
 
-    public String refreshToken;
-    public String accessToken;
+    public String refresh_token;
+    public String access_token;
     public Long access_expiration;
     public Long refresh_expiration;
 
@@ -258,18 +257,18 @@ class RhoasTokens {
     }
 
     public String getRefreshToken() {
-        return refreshToken;
+        return refresh_token;
     }
 
     public void setRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
+        this.refresh_token = refreshToken;
     }
 
     public String getAccessToken() {
-        return accessToken;
+        return access_token;
     }
 
     public void setAccessToken(String accessToken) {
-        this.accessToken = accessToken;
+        this.access_token = accessToken;
     }
 }
