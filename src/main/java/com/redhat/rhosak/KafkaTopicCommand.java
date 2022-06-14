@@ -30,16 +30,12 @@ class KafkaTopicCreateCommand extends CustomCommand implements Callable<Integer>
 
     private final ObjectMapper objectMapper;
     private final com.openshift.cloud.api.kas.auth.invoker.ApiClient apiInstanceClient;
-    //    private final ApiClient apiManagementClient;
     private final TopicsApi apiInstanceTopic;
-//    private final DefaultApi managementApi;
 
     public KafkaTopicCreateCommand() {
         this.objectMapper = new ObjectMapper();
         this.apiInstanceClient = KafkaInstanceClient.getKafkaInstanceAPIClient();
-//        this.apiManagementClient = KafkaManagementClient.getKafkaManagementAPIClient();
         this.apiInstanceTopic = new TopicsApi(apiInstanceClient);
-//        this.managementApi = new DefaultApi(apiManagementClient);
     }
 
     @CommandLine.Option(names = "--name", paramLabel = "string", required = true, description = "Topic name")
