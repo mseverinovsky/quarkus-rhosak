@@ -49,6 +49,8 @@ Ex. `rhoas kafka acl grant-access --producer --consumer --service-account srvc-a
 jbang .\Rhosak.java kafka acl grant-access --producer --consumer --service-account <client_id> --topic all --group all
 ```
 ```
+$ rhoas kafka acl grant-access --producer --consumer --all-accounts --topic all --group all
+
 $ rhoas kafka acl grant-access
 ❌ Invalid or missing option(s):
 * no operation specified: must provide at least one of "--producer" or "--consumer" flag

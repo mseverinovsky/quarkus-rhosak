@@ -7,6 +7,9 @@
 //DEPS com.fasterxml.jackson.core:jackson-annotations:2.13.3
 //SOURCES RhosakFiles.java
 //SOURCES LoginCommand.java
+//SOURCES KafkaCommand.java
+//SOURCES KafkaAclCommand.java
+//SOURCES KafkaTopicCommand.java
 //SOURCES ServiceAccountCommand.java
 
 package com.redhat.rhosak;
