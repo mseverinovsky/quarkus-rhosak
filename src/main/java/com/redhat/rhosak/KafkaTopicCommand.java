@@ -17,7 +17,7 @@ import java.util.concurrent.Callable;
 
 @Command(name = "topic", mixinStandardHelpOptions = true, description = "Create, describe, update, list, and delete topics",
         subcommands = KafkaTopicCreateCommand.class)
-class KafkaTopicCommand implements Callable<Integer> {
+public class KafkaTopicCommand implements Callable<Integer> {
 
     @Override
     public Integer call() {
