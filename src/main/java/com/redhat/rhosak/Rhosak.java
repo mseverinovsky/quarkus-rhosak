@@ -66,6 +66,49 @@ class CustomCommand {
         this.managementApi = new DefaultApi(apiManagementClient);
     }
 
+    protected void saveServiceAccountToFile(com.openshift.cloud.api.kas.auth.invoker.ApiClient apiInstanceClient,
+                                          ServiceAccount serviceAccount, String fileFormat) throws IOException {
+        Path saFile = Path.of(RhosakFiles.SA_FILE_NAME + "." + fileFormat);
+        serviceAccount.setCreatedAt(null); // otherwise .rhosak-sa file will be broken
+        objectMapper.writeValue(saFile.toFile(), serviceAccount);
+
+        String clientId = serviceAccount.getClientId();
+        String clientSecret = serviceAccount.getClientSecret();
+
+        Map<String, Object> formParametersMap = new HashMap<>() {{
+            put("grant_type", "client_credentials");
+            put("client_id", clientId);
+            put("client_secret", clientSecret);
+            put("scope", "openid");
+        }};
+        String acceptString = "application/json";
+        String contentTypeString = "application/x-www-form-urlencoded";
+        GenericType<Map<String, String>> returnTypeClass = new GenericType<>() {
+        };
+        String URL = "/auth/realms/rhoas/protocol/openid-connect/token";
+        try {
+            Map<String, String> res = apiInstanceClient.invokeAPI(URL,
+                    "POST",
+                    null,
+                    null,
+                    new HashMap<>(),
+                    new HashMap<>(),
+                    formParametersMap,
+                    acceptString,
+                    contentTypeString,
+                    new String[]{"Bearer"},
+                    returnTypeClass
+            );
+
+            Path apiTokensFile = Path.of(RhosakFiles.RHOSAK_API_CREDS_FILE_NAME + "." + fileFormat);
+            RhoasTokens tokens = new RhoasTokens();
+            tokens.setAccessToken(res.get("access_token"));
+            objectMapper.writeValue(apiTokensFile.toFile(), tokens);
+        } catch (com.openshift.cloud.api.kas.auth.invoker.ApiException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
     protected String rhosakApiToken() {
         try {
             RhoasTokens tokens = objectMapper.readValue(Path.of(RhosakFiles.RHOSAK_API_CREDS_FILE_NAME + ".json").toFile(), RhoasTokens.class);
