@@ -120,7 +120,7 @@ class KafkaTopicListCommand extends CustomCommand implements Callable<Integer> {
         apiInstanceClient.setAccessToken(accessToken);
 
         try {
-            TopicsList topicsList = apiInstanceTopic.getTopics(10, "", 1, null, null);
+            TopicsList topicsList = apiInstanceTopic.getTopics(null, null, null, null, null);
             System.out.print(
                 "  NAME         PARTITIONS   RETENTION TIME (MS)   RETENTION SIZE (BYTES)  \n" +
                 " ------------ ------------ --------------------- ------------------------ \n"
