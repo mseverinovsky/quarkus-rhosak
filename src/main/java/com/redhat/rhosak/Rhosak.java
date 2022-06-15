@@ -29,6 +29,7 @@ import picocli.CommandLine.Command;
 
 import javax.ws.rs.core.GenericType;
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
@@ -42,6 +43,8 @@ import java.util.concurrent.Callable;
         subcommands = {LoginCommand.class, KafkaCommand.class, ServiceAccountCommand.class})
 public class Rhosak implements Callable<Integer> {
 
+    private static final ObjectMapper objectMapper = new ObjectMapper();
+
     @Override
     public Integer call() {
         return 0;
@@ -53,6 +56,18 @@ public class Rhosak implements Callable<Integer> {
 
         System.exit(exitCode);
     }
+
+    public static void storeTokenResponse(KeycloakInstalled keycloak) throws IOException {
+        Path tokensPath = Path.of(RhosakFiles.DEFAULT_CREDENTIALS_FILENAME);
+        RhoasTokens rhoasTokens = new RhoasTokens();
+        rhoasTokens.refresh_token = keycloak.getRefreshToken();
+        rhoasTokens.access_token = keycloak.getTokenString();
+        long timeMillis = System.currentTimeMillis();
+        rhoasTokens.refresh_expiration = timeMillis + keycloak.getTokenResponse().getRefreshExpiresIn() * 1000;
+        rhoasTokens.access_expiration = timeMillis + keycloak.getTokenResponse().getExpiresIn() * 1000;
+        objectMapper.writeValue(tokensPath.toFile(), rhoasTokens);
+    }
+
 }
 
 class CustomCommand {
@@ -102,7 +117,7 @@ class CustomCommand {
 
             Path apiTokensFile = Path.of(RhosakFiles.RHOSAK_API_CREDS_FILE_NAME + "." + fileFormat);
             RhoasTokens tokens = new RhoasTokens();
-            tokens.setAccessToken(res.get("access_token"));
+            tokens.setAccess_token(res.get("access_token"));
             objectMapper.writeValue(apiTokensFile.toFile(), tokens);
         } catch (com.openshift.cloud.api.kas.auth.invoker.ApiException e) {
             throw new RuntimeException(e);
@@ -112,7 +127,7 @@ class CustomCommand {
     protected String rhosakApiToken() {
         try {
             RhoasTokens tokens = objectMapper.readValue(Path.of(RhosakFiles.RHOSAK_API_CREDS_FILE_NAME + ".json").toFile(), RhoasTokens.class);
-            return tokens.getAccessToken();
+            return tokens.getAccess_token();
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -165,17 +180,23 @@ class KafkaManagementClient {
     public static String getBearerToken() {
         try {
             RhoasTokens storedTokens = getStoredTokenResponse();
+            String accessToken;
 
             // ensure token is valid for at least 30 seconds
             if (storedTokens != null && storedTokens.accessTokenIsValidFor(MIN_TOKEN_VALIDITY)) {
-                return storedTokens.getAccessToken();
+                accessToken = storedTokens.getAccess_token();
             } else if (storedTokens != null && storedTokens.refreshTokenIsValidFor(MIN_TOKEN_VALIDITY)) {
-                keycloak.refreshToken(storedTokens.getRefreshToken());
-                return keycloak.getTokenString();
+                keycloak.refreshToken(storedTokens.getRefresh_token());
+                Rhosak.storeTokenResponse(keycloak);
+                accessToken = keycloak.getTokenString();
             } else {
+                storedTokens = new RhoasTokens();
                 keycloak.loginDesktop();
-                return keycloak.getTokenString();
+                storedTokens.setAccess_token(keycloak.getTokenString());
+                Rhosak.storeTokenResponse(keycloak);
+                accessToken = keycloak.getTokenString();
             }
+            return accessToken;
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -206,10 +227,18 @@ class KafkaInstanceClient {
     public static String checkTokenExpirationAndGetNewOne() {
         String accessToken;
         try {
-            RhoasTokens tokens = objectMapper.readValue(Path.of(RhosakFiles.RHOSAK_API_CREDS_FILE_NAME + ".json").toFile(), RhoasTokens.class);
-            String[] parts = tokens.getAccessToken().split("\\.");
+            File apiCredsFile = Path.of(RhosakFiles.RHOSAK_API_CREDS_FILE_NAME + ".json").toFile();
+            if (!apiCredsFile.exists()) {
+                throw new RuntimeException(apiCredsFile.getName() + " does not exist. Try to create service account first");
+            }
+            RhoasTokens tokens = objectMapper.readValue(apiCredsFile, RhoasTokens.class);
+            String[] parts = tokens.getAccess_token().split("\\.");
 
-            ServiceAccount serviceAccount = objectMapper.readValue(Path.of(RhosakFiles.SA_FILE_NAME + ".json").toFile(), ServiceAccount.class);
+            File saFile = Path.of(RhosakFiles.SA_FILE_NAME + ".json").toFile();
+            if (!saFile.exists()) {
+                throw new RuntimeException(saFile + " does not exist. Try to create service account first");
+            }
+            ServiceAccount serviceAccount = objectMapper.readValue(saFile, ServiceAccount.class);
             JsonNode readValue = objectMapper.readValue(decode(parts[1]), JsonNode.class);
 
             JsonNode expiration = readValue.get("exp");
@@ -239,13 +268,13 @@ class KafkaInstanceClient {
 
                     Path apiTokensFile = Path.of(RhosakFiles.RHOSAK_API_CREDS_FILE_NAME + ".json");
                     accessToken = res.get("access_token");
-                    tokens.setAccessToken(accessToken);
+                    tokens.setAccess_token(accessToken);
                     objectMapper.writeValue(apiTokensFile.toFile(), tokens);
                 } catch (com.openshift.cloud.api.kas.auth.invoker.ApiException e) {
                     throw new RuntimeException(e);
                 }
             } else {
-                accessToken = tokens.getAccessToken();
+                accessToken = tokens.getAccess_token();
             }
         } catch (IOException e) {
             throw new RuntimeException(e);
@@ -299,19 +328,19 @@ class RhoasTokens {
         return (refresh_expiration) - duration.toMillis() >= System.currentTimeMillis();
     }
 
-    public String getRefreshToken() {
+    public String getRefresh_token() {
         return refresh_token;
     }
 
-    public void setRefreshToken(String refreshToken) {
-        this.refresh_token = refreshToken;
+    public void setRefresh_token(String refresh_token) {
+        this.refresh_token = refresh_token;
     }
 
-    public String getAccessToken() {
+    public String getAccess_token() {
         return access_token;
     }
 
-    public void setAccessToken(String accessToken) {
-        this.access_token = accessToken;
+    public void setAccess_token(String access_token) {
+        this.access_token = access_token;
     }
 }
