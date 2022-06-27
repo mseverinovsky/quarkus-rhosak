@@ -64,6 +64,11 @@
       <artifactId>quarkus-junit5</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.apache.kafka</groupId>
+      <artifactId>kafka-clients</artifactId>
+      <version>3.2.0</version>
+    </dependency>
   </dependencies>
   <build>
     <plugins>

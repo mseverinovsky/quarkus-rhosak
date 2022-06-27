@@ -122,14 +122,14 @@ class KafkaTopicListCommand extends CustomCommand implements Callable<Integer> {
         try {
             TopicsList topicsList = apiInstanceTopic.getTopics(null, null, null, null, null);
             System.out.print(
-                "  NAME         PARTITIONS   RETENTION TIME (MS)   RETENTION SIZE (BYTES)  \n" +
-                " ------------ ------------ --------------------- ------------------------ \n"
+                "  NAME             PARTITIONS   RETENTION TIME (MS)   RETENTION SIZE (BYTES)  \n" +
+                " ---------------- ------------ --------------------- ------------------------ \n"
             );
             for (Topic topic : topicsList.getItems()) {
                 String retentionSize = Objects.requireNonNull(topic.getConfig()).get(21).getValue();
                 if (retentionSize.equals("-1")) retentionSize += " (Unlimited)";
                 System.out.format(
-                "  %-11s%11d%18s%25s\n",
+                "  %-15s%11d%18s%25s\n",
                         topic.getName(),
                         Objects.requireNonNull(topic.getPartitions()).size(),         // Partitions
                         Objects.requireNonNull(topic.getConfig()).get(9).getValue(),  // Retention time in milliseconds

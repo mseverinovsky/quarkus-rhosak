@@ -5,6 +5,7 @@
 //DEPS info.picocli:picocli:4.6.3
 //DEPS com.fasterxml.jackson.core:jackson-core:2.13.3
 //DEPS com.fasterxml.jackson.core:jackson-annotations:2.13.3
+//DEPS org.apache.kafka:kafka-clients:3.2.0
 //SOURCES RhosakFiles.java
 //SOURCES LoginCommand.java
 //SOURCES KafkaCommand.java
