@@ -24,6 +24,8 @@ import com.openshift.cloud.api.kas.invoker.ApiException;
 import com.openshift.cloud.api.kas.invoker.Configuration;
 import com.openshift.cloud.api.kas.invoker.auth.HttpBearerAuth;
 import com.openshift.cloud.api.kas.models.ServiceAccount;
+import org.apache.kafka.clients.admin.AdminClient;
+import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.keycloak.adapters.installed.KeycloakInstalled;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -45,6 +47,11 @@ import java.util.concurrent.Callable;
 public class Rhosak implements Callable<Integer> {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
+    private static String bootstrapServerUrl;
+
+    public static String getBootstrapServerUrl() {
+        return bootstrapServerUrl;
+    }
 
     @Override
     public Integer call() {
@@ -69,77 +76,12 @@ public class Rhosak implements Callable<Integer> {
         objectMapper.writeValue(tokensPath.toFile(), rhoasTokens);
     }
 
-}
-
-class CustomCommand {
-    private final ObjectMapper objectMapper;
-    private final ApiClient apiManagementClient;
-    private final DefaultApi managementApi;
-
-    public CustomCommand() {
-        this.objectMapper = new ObjectMapper();
-        this.apiManagementClient = KafkaManagementClient.getKafkaManagementAPIClient();
-        this.managementApi = new DefaultApi(apiManagementClient);
-    }
-
-    protected void saveServiceAccountToFile(com.openshift.cloud.api.kas.auth.invoker.ApiClient apiInstanceClient,
-                                          ServiceAccount serviceAccount, String fileFormat) throws IOException {
-        Path saFile = Path.of(RhosakFiles.SA_FILE_NAME + "." + fileFormat);
-        serviceAccount.setCreatedAt(null); // otherwise .rhosak-sa file will be broken
-        objectMapper.writeValue(saFile.toFile(), serviceAccount);
-
-        String clientId = serviceAccount.getClientId();
-        String clientSecret = serviceAccount.getClientSecret();
-
-        Map<String, Object> formParametersMap = new HashMap<>() {{
-            put("grant_type", "client_credentials");
-            put("client_id", clientId);
-            put("client_secret", clientSecret);
-            put("scope", "openid");
-        }};
-        String acceptString = "application/json";
-        String contentTypeString = "application/x-www-form-urlencoded";
-        GenericType<Map<String, String>> returnTypeClass = new GenericType<>() {
-        };
-        String URL = "/auth/realms/rhoas/protocol/openid-connect/token";
-        try {
-            Map<String, String> res = apiInstanceClient.invokeAPI(URL,
-                    "POST",
-                    null,
-                    null,
-                    new HashMap<>(),
-                    new HashMap<>(),
-                    formParametersMap,
-                    acceptString,
-                    contentTypeString,
-                    new String[]{"Bearer"},
-                    returnTypeClass
-            );
-
-            Path apiTokensFile = Path.of(RhosakFiles.RHOSAK_API_CREDS_FILE_NAME + "." + fileFormat);
-            RhoasTokens tokens = new RhoasTokens();
-            tokens.setAccess_token(res.get("access_token"));
-            objectMapper.writeValue(apiTokensFile.toFile(), tokens);
-        } catch (com.openshift.cloud.api.kas.auth.invoker.ApiException e) {
-            throw new RuntimeException(e);
+    public static ServiceAccount loadServiceAccountFromFile() throws IOException {
+        File saFile = Path.of(RhosakFiles.SA_FILE_NAME + ".json").toFile();
+        if (!saFile.exists()) {
+            throw new RuntimeException(saFile + " does not exist. Try to create service account first");
         }
-    }
-
-    protected String rhosakApiToken() {
-        try {
-            RhoasTokens tokens = objectMapper.readValue(Path.of(RhosakFiles.RHOSAK_API_CREDS_FILE_NAME + ".json").toFile(), RhoasTokens.class);
-            return tokens.getAccess_token();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-    }
-
-    protected String getServerUrl() {
-        try {
-            return "https://admin-server-" + managementApi.getKafkas(null, null, null, null).getItems().get(0).getBootstrapServerHost();
-        } catch (ApiException e) {
-            throw new RuntimeException("Cannot get kafka url", e.getCause());
-        }
+        return objectMapper.readValue(saFile, ServiceAccount.class);
     }
 
 }
@@ -235,11 +177,7 @@ class KafkaInstanceClient {
             RhoasTokens tokens = objectMapper.readValue(apiCredsFile, RhoasTokens.class);
             String[] parts = tokens.getAccess_token().split("\\.");
 
-            File saFile = Path.of(RhosakFiles.SA_FILE_NAME + ".json").toFile();
-            if (!saFile.exists()) {
-                throw new RuntimeException(saFile + " does not exist. Try to create service account first");
-            }
-            ServiceAccount serviceAccount = objectMapper.readValue(saFile, ServiceAccount.class);
+            ServiceAccount serviceAccount = Rhosak.loadServiceAccountFromFile();
             JsonNode readValue = objectMapper.readValue(decode(parts[1]), JsonNode.class);
 
             JsonNode expiration = readValue.get("exp");
@@ -283,6 +221,7 @@ class KafkaInstanceClient {
 
         return accessToken;
     }
+
 
     private static String decode(String encodedString) {
         return new String(Base64.getUrlDecoder().decode(encodedString));

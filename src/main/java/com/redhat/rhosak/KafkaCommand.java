@@ -4,6 +4,7 @@ import com.openshift.cloud.api.kas.DefaultApi;
 import com.openshift.cloud.api.kas.invoker.ApiException;
 import com.openshift.cloud.api.kas.models.KafkaRequest;
 import com.openshift.cloud.api.kas.models.KafkaRequestPayload;
+import com.redhat.rhosak.acl.KafkaAclCommand;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
