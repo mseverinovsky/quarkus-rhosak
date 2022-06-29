@@ -101,7 +101,6 @@ public class CustomCommand {
                     + " username=\"" + userName + "\""
                     + " password=\"" + password + "\";");
             put("bootstrap.servers", serverUrl);
-            put("group.id", "kafka-quickstart-producer");
         }};
 
         Map<String, Object> conf = new HashMap<>(configMap);
