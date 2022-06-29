@@ -9,7 +9,10 @@
 //SOURCES RhosakFiles.java
 //SOURCES LoginCommand.java
 //SOURCES KafkaCommand.java
-//SOURCES KafkaAclCommand.java
+//SOURCES CustomCommand.java
+//SOURCES acl/KafkaAclCommand.java
+//SOURCES acl/KafkaAclListCommand.java
+//SOURCES acl/KafkaAclCreateCommand.java
 //SOURCES KafkaTopicCommand.java
 //SOURCES ServiceAccountCommand.java
 
@@ -17,15 +20,11 @@ package com.redhat.rhosak;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.openshift.cloud.api.kas.DefaultApi;
 import com.openshift.cloud.api.kas.auth.invoker.auth.OAuth;
 import com.openshift.cloud.api.kas.invoker.ApiClient;
-import com.openshift.cloud.api.kas.invoker.ApiException;
 import com.openshift.cloud.api.kas.invoker.Configuration;
 import com.openshift.cloud.api.kas.invoker.auth.HttpBearerAuth;
 import com.openshift.cloud.api.kas.models.ServiceAccount;
-import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.keycloak.adapters.installed.KeycloakInstalled;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
