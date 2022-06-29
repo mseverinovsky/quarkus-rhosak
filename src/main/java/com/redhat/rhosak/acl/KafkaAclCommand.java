@@ -7,7 +7,7 @@ import java.util.concurrent.Callable;
 
 @Command(name = "acl", mixinStandardHelpOptions = true,
         description = "Manage Kafka ACLs for users and service accounts",
-        subcommands = {KafkaAclListCommand.class})
+        subcommands = {KafkaAclCreateCommand.class, KafkaAclListCommand.class})
 public class KafkaAclCommand implements Callable<Integer> {
 
     public KafkaAclCommand() {}
