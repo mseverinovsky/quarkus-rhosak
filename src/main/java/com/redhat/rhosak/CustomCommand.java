@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openshift.cloud.api.kas.DefaultApi;
 import com.openshift.cloud.api.kas.invoker.ApiClient;
 import com.openshift.cloud.api.kas.invoker.ApiException;
+import com.openshift.cloud.api.kas.models.KafkaRequest;
 import com.openshift.cloud.api.kas.models.ServiceAccount;
+import com.redhat.rhosak.exception.NoKafkaInstanceFoundException;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 
@@ -12,6 +14,7 @@ import javax.ws.rs.core.GenericType;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class CustomCommand {
@@ -77,19 +80,23 @@ public class CustomCommand {
         }
     }
 
-    protected String getServerUrl() {
+    protected String getServerUrl() throws NoKafkaInstanceFoundException {
         return "https://admin-server-" + getBootstrapServerUrl();
     }
 
-    protected String getBootstrapServerUrl() {
+    protected String getBootstrapServerUrl() throws NoKafkaInstanceFoundException {
         try {
-            return managementApi.getKafkas(null, null, null, null).getItems().get(0).getBootstrapServerHost();
+            List<KafkaRequest> list = managementApi.getKafkas(null, null, null, null).getItems();
+            if (list.isEmpty()) {
+                throw new NoKafkaInstanceFoundException("No Kafka instance found");
+            }
+            return list.get(0).getBootstrapServerHost();
         } catch (ApiException e) {
             throw new RuntimeException("Cannot get kafka url", e.getCause());
         }
     }
 
-    protected AdminClient getAdminClient() throws IOException {
+    protected AdminClient getAdminClient() throws IOException, NoKafkaInstanceFoundException {
         ServiceAccount sa = Rhosak.loadServiceAccountFromFile();
         String userName = sa.getClientId();
         String password = sa.getClientSecret();

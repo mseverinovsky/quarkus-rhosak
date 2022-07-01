@@ -2,6 +2,7 @@ package com.redhat.rhosak;
 
 import com.openshift.cloud.api.kas.DefaultApi;
 import com.openshift.cloud.api.kas.invoker.ApiException;
+import com.openshift.cloud.api.kas.models.Error;
 import com.openshift.cloud.api.kas.models.KafkaRequest;
 import com.openshift.cloud.api.kas.models.KafkaRequestPayload;
 import com.redhat.rhosak.acl.KafkaAclCommand;
@@ -34,7 +35,7 @@ class KafkaCreateCommand implements Callable<Integer> {
                 );
     }
 
-    @CommandLine.Option(names = "--name", paramLabel = "string", description = "Name of the kafka instance")
+    @CommandLine.Option(names = "--name", paramLabel = "string", required = true, description = "Name of the kafka instance")
     String instanceName;
 
     @Override
@@ -103,9 +104,16 @@ class KafkaDeleteCommand implements Callable<Integer> {
     @Override
     public Integer call() {
         try {
-            System.out.println(managementAPI.deleteKafkaById(kafkaId, true));
+            Error error = managementAPI.deleteKafkaById(kafkaId, true);
+            if (error != null) {
+                System.err.println(error);
+            }
         } catch (ApiException e) {
-            throw new RuntimeException(e.getMessage());
+            if (e.getCode() == 404 ) {
+                System.err.println("Kafka instance not found. Id: " + kafkaId);
+            } else {
+                throw new RuntimeException(e.getMessage(), e);
+            }
         }
         return 0;
     }

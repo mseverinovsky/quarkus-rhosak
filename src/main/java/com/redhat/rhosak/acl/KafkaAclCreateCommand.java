@@ -3,8 +3,8 @@ package com.redhat.rhosak.acl;
 import com.openshift.cloud.api.kas.models.ServiceAccount;
 import com.redhat.rhosak.CustomCommand;
 import com.redhat.rhosak.Rhosak;
+import com.redhat.rhosak.exception.NoKafkaInstanceFoundException;
 import org.apache.kafka.clients.admin.AdminClient;
-import org.apache.kafka.clients.admin.CreateAclsResult;
 import org.apache.kafka.common.acl.AccessControlEntry;
 import org.apache.kafka.common.acl.AclBinding;
 import org.apache.kafka.common.acl.AclOperation;
@@ -32,7 +32,7 @@ public class KafkaAclCreateCommand extends CustomCommand implements Callable<Int
     @CommandLine.Option(names = "--permission", paramLabel = "string", required = true, description = "Set the ACL permission. Choose from: \"allow\", \"deny\"")
     String permission;
 
-    @CommandLine.Option(names = "--service-account", paramLabel = "string", defaultValue = "User:*", description = "Service account client ID used as principal for this operation")
+    @CommandLine.Option(names = "--service-account", paramLabel = "string", defaultValue = "*", description = "Service account client ID used as principal for this operation")
     String serviceAccountName;
 
     @CommandLine.Option(names = "--topic", paramLabel = "string", defaultValue = "*", description = "Set the topic resource")
@@ -55,7 +55,13 @@ public class KafkaAclCreateCommand extends CustomCommand implements Callable<Int
             } else {
                 principal = "User:" + serviceAccountName;
             }
-            AdminClient adminClient = getAdminClient();
+            AdminClient adminClient = null;
+            try {
+                adminClient = getAdminClient();
+            } catch (NoKafkaInstanceFoundException e) {
+                System.err.println(e.getLocalizedMessage());
+                return -1;
+            }
             ResourcePattern resourcePattern = new ResourcePattern(ResourceType.TOPIC, topicResource, PatternType.LITERAL);
             AclOperation aclOperation = AclOperation.valueOf(operation.toUpperCase(Locale.ROOT));
             AclPermissionType permissionType = AclPermissionType.valueOf(permission.toUpperCase(Locale.ROOT));

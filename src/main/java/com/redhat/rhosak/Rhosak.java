@@ -13,6 +13,8 @@
 //SOURCES acl/KafkaAclCommand.java
 //SOURCES acl/KafkaAclListCommand.java
 //SOURCES acl/KafkaAclCreateCommand.java
+//SOURCES acl/KafkaAclDeleteCommand.java
+//SOURCES exception/NoKafkaInstanceFoundException.java
 //SOURCES KafkaTopicCommand.java
 //SOURCES ServiceAccountCommand.java
 
@@ -46,11 +48,6 @@ import java.util.concurrent.Callable;
 public class Rhosak implements Callable<Integer> {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
-    private static String bootstrapServerUrl;
-
-    public static String getBootstrapServerUrl() {
-        return bootstrapServerUrl;
-    }
 
     @Override
     public Integer call() {

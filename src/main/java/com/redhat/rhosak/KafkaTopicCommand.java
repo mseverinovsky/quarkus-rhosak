@@ -2,6 +2,7 @@ package com.redhat.rhosak;
 
 import com.openshift.cloud.api.kas.auth.TopicsApi;
 import com.openshift.cloud.api.kas.auth.models.*;
+import com.redhat.rhosak.exception.NoKafkaInstanceFoundException;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
@@ -43,14 +44,19 @@ class KafkaTopicCreateCommand extends CustomCommand implements Callable<Integer>
     public Integer call() {
         try {
             String accessToken = KafkaInstanceClient.checkTokenExpirationAndGetNewOne();
-            createInstanceTopic(accessToken, topicName, retentionMs);
+            try {
+                createInstanceTopic(accessToken, topicName, retentionMs);
+            } catch (NoKafkaInstanceFoundException e) {
+                System.err.println(e.getLocalizedMessage());
+                return -1;
+            }
         } catch (com.openshift.cloud.api.kas.auth.invoker.ApiException e) {
             throw new RuntimeException(e);
         }
         return 0;
     }
 
-    private void createInstanceTopic(String accessToken, String topicName, String retentionMs) throws com.openshift.cloud.api.kas.auth.invoker.ApiException {
+    private void createInstanceTopic(String accessToken, String topicName, String retentionMs) throws com.openshift.cloud.api.kas.auth.invoker.ApiException, NoKafkaInstanceFoundException {
         NewTopicInput topicInput = createTopicInput(topicName, retentionMs);
         String serverUrl = getServerUrl();
 
@@ -105,11 +111,16 @@ class KafkaTopicListCommand extends CustomCommand implements Callable<Integer> {
     @Override
     public Integer call() {
         String accessToken = KafkaInstanceClient.checkTokenExpirationAndGetNewOne();
-        listTopics(accessToken);
+        try {
+            listTopics(accessToken);
+        } catch (NoKafkaInstanceFoundException e) {
+            System.err.println(e.getLocalizedMessage());
+            return -1;
+        }
         return 0;
     }
 
-    private void listTopics(String accessToken) {
+    private void listTopics(String accessToken) throws NoKafkaInstanceFoundException {
         String serverUrl = getServerUrl();
 
         if (accessToken == null || accessToken.equals("")) {

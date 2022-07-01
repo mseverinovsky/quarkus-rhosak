@@ -1,6 +1,7 @@
 package com.redhat.rhosak.acl;
 
 import com.redhat.rhosak.CustomCommand;
+import com.redhat.rhosak.exception.NoKafkaInstanceFoundException;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.DescribeAclsOptions;
 import org.apache.kafka.common.acl.AccessControlEntry;
@@ -22,8 +23,17 @@ public class KafkaAclListCommand extends CustomCommand implements Callable<Integ
     public Integer call() {
         AclBindingFilter filter = new AclBindingFilter(ResourcePatternFilter.ANY, AccessControlEntryFilter.ANY);
 
+        //todo: Add options to filter
+
         try {
-            AdminClient adminClient = getAdminClient();
+            AdminClient adminClient = null;
+            try {
+                adminClient = getAdminClient();
+            } catch (NoKafkaInstanceFoundException e) {
+                System.err.println(e.getLocalizedMessage());
+                return -1;
+            }
+            if (adminClient == null) return -1;
             Collection<AclBinding> aclBindings = adminClient.describeAcls(filter, new DescribeAclsOptions().timeoutMs(5_000)).values().get();
 
             System.out.printf("  PRINCIPAL %5s   PERMISSION   OPERATION          DESCRIPTION              \n", "(" + aclBindings.size() + ")");
