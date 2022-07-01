@@ -1,6 +1,8 @@
 package com.redhat.rhosak;
 
 import com.openshift.cloud.api.kas.auth.TopicsApi;
+import com.openshift.cloud.api.kas.auth.invoker.ApiClient;
+import com.openshift.cloud.api.kas.auth.invoker.ApiException;
 import com.openshift.cloud.api.kas.auth.models.*;
 import com.redhat.rhosak.exception.NoKafkaInstanceFoundException;
 import picocli.CommandLine;
@@ -26,7 +28,7 @@ class KafkaTopicCreateCommand extends CustomCommand implements Callable<Integer>
 
     private static final String DEFAULT_RETENTION_MS = "86400000"; // 24 hours in milliseconds
 
-    private final com.openshift.cloud.api.kas.auth.invoker.ApiClient apiInstanceClient;
+    private final ApiClient apiInstanceClient;
     private final TopicsApi apiInstanceTopic;
 
     public KafkaTopicCreateCommand() {
@@ -50,13 +52,13 @@ class KafkaTopicCreateCommand extends CustomCommand implements Callable<Integer>
                 System.err.println(e.getLocalizedMessage());
                 return -1;
             }
-        } catch (com.openshift.cloud.api.kas.auth.invoker.ApiException e) {
+        } catch (ApiException e) {
             throw new RuntimeException(e);
         }
         return 0;
     }
 
-    private void createInstanceTopic(String accessToken, String topicName, String retentionMs) throws com.openshift.cloud.api.kas.auth.invoker.ApiException, NoKafkaInstanceFoundException {
+    private void createInstanceTopic(String accessToken, String topicName, String retentionMs) throws ApiException, NoKafkaInstanceFoundException {
         NewTopicInput topicInput = createTopicInput(topicName, retentionMs);
         String serverUrl = getServerUrl();
 
@@ -70,7 +72,7 @@ class KafkaTopicCreateCommand extends CustomCommand implements Callable<Integer>
         try {
             Topic topic = apiInstanceTopic.createTopic(topicInput);
             System.out.println(">>> topic: " + topic);
-        } catch (com.openshift.cloud.api.kas.auth.invoker.ApiException e) {
+        } catch (ApiException e) {
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -100,7 +102,7 @@ class KafkaTopicCreateCommand extends CustomCommand implements Callable<Integer>
 @Command(name = "list", mixinStandardHelpOptions = true)
 class KafkaTopicListCommand extends CustomCommand implements Callable<Integer> {
 
-    private final com.openshift.cloud.api.kas.auth.invoker.ApiClient apiInstanceClient;
+    private final ApiClient apiInstanceClient;
     private final TopicsApi apiInstanceTopic;
 
     public KafkaTopicListCommand() {
@@ -147,7 +149,7 @@ class KafkaTopicListCommand extends CustomCommand implements Callable<Integer> {
                         retentionSize                                                 // retention size. Unlimited if == -1
                 );
             }
-        } catch (com.openshift.cloud.api.kas.auth.invoker.ApiException e) {
+        } catch (ApiException e) {
             throw new RuntimeException(e.getMessage());
         }
     }
@@ -156,8 +158,23 @@ class KafkaTopicListCommand extends CustomCommand implements Callable<Integer> {
 @Command(name = "delete", mixinStandardHelpOptions = true)
 class KafkaTopicDeleteCommand extends CustomCommand implements Callable<Integer> {
 
+    private final TopicsApi apiInstanceTopic;
+
+    public KafkaTopicDeleteCommand() {
+        ApiClient apiInstanceClient = KafkaInstanceClient.getKafkaInstanceAPIClient();
+        this.apiInstanceTopic = new TopicsApi(apiInstanceClient);
+    }
+
+    @CommandLine.Option(names = "--name", paramLabel = "string", required = true, description = "Topic name")
+    String topicName;
+
     @Override
     public Integer call() {
+        try {
+            apiInstanceTopic.deleteTopic(topicName);
+        } catch (ApiException e) {
+            throw new RuntimeException(e);
+        }
         return 0;
     }
 }

@@ -19,14 +19,25 @@ import java.util.concurrent.ExecutionException;
 @CommandLine.Command(name = "list", mixinStandardHelpOptions = true, description = "Create a Kafka ACL")
 public class KafkaAclListCommand extends CustomCommand implements Callable<Integer> {
 
+//    @CommandLine.Option(names = "--user", paramLabel = "string", description = "User ID to be used as principal")
+//    String userId;
+
+    @CommandLine.Option(names = "--service-account", paramLabel = "string", description = "Service account client ID used as principal for this operation")
+    String serviceAccountClientId;
+
+    @CommandLine.Option(names = "--topic", paramLabel = "string", description = "Text search to filter ACL rules for topics by name")
+    String topic;
+
+    @CommandLine.Option(names = "--group", paramLabel = "string", description = "Text search to filter ACL rules for consumer groups by ID")
+    String group;
+
+
     @Override
     public Integer call() {
         AclBindingFilter filter = new AclBindingFilter(ResourcePatternFilter.ANY, AccessControlEntryFilter.ANY);
 
-        //todo: Add options to filter
-
         try {
-            AdminClient adminClient = null;
+            AdminClient adminClient;
             try {
                 adminClient = getAdminClient();
             } catch (NoKafkaInstanceFoundException | IOException e) {

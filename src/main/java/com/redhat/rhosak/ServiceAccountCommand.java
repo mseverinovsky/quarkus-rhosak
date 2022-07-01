@@ -67,8 +67,6 @@ class ServiceAccountListCommand implements Callable<Integer> {
 
     private final SecurityApi securityAPI;
 
-    //todo: Add options
-
     public ServiceAccountListCommand() {
         this.securityAPI = new SecurityApi(KafkaManagementClient.getKafkaManagementAPIClient());
     }

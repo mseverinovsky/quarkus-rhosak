@@ -32,7 +32,7 @@ public class KafkaAclCreateCommand extends CustomCommand implements Callable<Int
     @CommandLine.Option(names = "--permission", paramLabel = "string", required = true, description = "Set the ACL permission. Choose from: \"allow\", \"deny\"")
     String permission;
 
-    @CommandLine.Option(names = "--service-account", paramLabel = "string", defaultValue = "*", description = "Service account client ID used as principal for this operation")
+    @CommandLine.Option(names = "--service-account", paramLabel = "string", description = "Service account ID used as principal for this operation. Ex.(dd71f41b-262e-4443-b7b0-80c3cd79dcbb)")
     String serviceAccountId;
 
     @CommandLine.Option(names = "--topic", paramLabel = "string", defaultValue = "*", description = "Set the topic resource")
@@ -48,9 +48,9 @@ public class KafkaAclCreateCommand extends CustomCommand implements Callable<Int
             ServiceAccount sa;
             if (serviceAccountId == null) {
                 try {
-                    System.out.println("Not principal specified. Trying to load from file ...");
+                    System.out.println("No principal specified. Trying to load from file ...");
                     sa = Rhosak.loadServiceAccountFromFile();
-                    if (checkServiceAccountExists(sa.getId())) {
+                    if (!checkServiceAccountExists(sa.getId())) {
                         System.err.println("Principal not found. Id: " + sa.getId());
                         return -1;
                     }
