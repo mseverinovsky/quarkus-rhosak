@@ -45,14 +45,28 @@ public class KafkaAclListCommand extends CustomCommand implements Callable<Integ
                 return -1;
             }
             if (adminClient == null) return -1;
-            Collection<AclBinding> aclBindings = adminClient.describeAcls(filter, new DescribeAclsOptions().timeoutMs(5_000)).values().get();
+            Collection<AclBinding> aclBindings =
+                    adminClient.describeAcls(filter, new DescribeAclsOptions().timeoutMs(5_000)).values().get();
 
-            System.out.printf("  PRINCIPAL %5s   PERMISSION   OPERATION          DESCRIPTION              \n", "(" + aclBindings.size() + ")");
-            System.out.print(" ----------------- ------------ ------------------ ------------------------- \n");
+            int n = 0;
+            for (AclBinding ab : aclBindings) {
+                n = Math.max(ab.entry().principal().length(), n);
+            }
+            StringBuilder space = new StringBuilder();
+            space.append(" ".repeat(Math.max(0, n - 20)));
+            System.out.printf("  PRINCIPAL %5s " + space + "  PERMISSION   OPERATION          DESCRIPTION              \n",
+                    "(" + aclBindings.size() + ")", space);
+            System.out.print(" " + "-".repeat(Math.max(17, n - 3)) + " ------------ ------------------ ------------------------- \n");
             for (AclBinding ab : aclBindings) {
                 AccessControlEntry entry = ab.entry();
-                System.out.printf("  %-17s %-12s %-18s %s is %s\n",
-                        entry.principal(),
+                String principal;
+                if (entry.principal().equals("User:*")) {
+                    principal = "All Accounts";
+                } else {
+                    principal = entry.principal().replaceFirst("User:", "");
+                }
+                System.out.printf("  %-" + Math.max(17, n - 3) + "s %-12s %-18s %s is %s\n",
+                        principal,
                         entry.permissionType(),
                         entry.operation(),
                         ab.pattern().resourceType(), ab.pattern().name());
