@@ -2,6 +2,7 @@ package com.redhat.rhosak;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openshift.cloud.api.kas.DefaultApi;
+import com.openshift.cloud.api.kas.SecurityApi;
 import com.openshift.cloud.api.kas.invoker.ApiClient;
 import com.openshift.cloud.api.kas.invoker.ApiException;
 import com.openshift.cloud.api.kas.models.KafkaRequest;
@@ -114,6 +115,26 @@ public class CustomCommand {
         conf.put(AdminClientConfig.REQUEST_TIMEOUT_MS_CONFIG, "5000");
 
         return AdminClient.create(conf);
+    }
+
+    protected boolean checkServiceAccountExists(String serviceAccountId) {
+        SecurityApi securityAPI = new SecurityApi(KafkaManagementClient.getKafkaManagementAPIClient());
+        try {
+            return securityAPI.getServiceAccountById(serviceAccountId) != null;
+        } catch (ApiException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    protected ServiceAccount getServiceAccountById(String serviceAccountId) {
+        SecurityApi securityAPI = new SecurityApi(KafkaManagementClient.getKafkaManagementAPIClient());
+        try {
+            return securityAPI.getServiceAccountById(serviceAccountId);
+        } catch (ApiException e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
 }

@@ -33,32 +33,45 @@ public class KafkaAclCreateCommand extends CustomCommand implements Callable<Int
     String permission;
 
     @CommandLine.Option(names = "--service-account", paramLabel = "string", defaultValue = "*", description = "Service account client ID used as principal for this operation")
-    String serviceAccountName;
+    String serviceAccountId;
 
     @CommandLine.Option(names = "--topic", paramLabel = "string", defaultValue = "*", description = "Set the topic resource")
     String topicResource;
 
-    public KafkaAclCreateCommand() {
-    }
+    public KafkaAclCreateCommand() {}
 
     @Override
     public Integer call() {
 
         try {
             String principal;
-            if (serviceAccountName == null) {
-                ServiceAccount sa = Rhosak.loadServiceAccountFromFile();
-                principal = "User:" + sa.getName();
-                if (sa.getName() == null) {
-                    throw new RuntimeException("Principal name can not be null!");
+            ServiceAccount sa;
+            if (serviceAccountId == null) {
+                try {
+                    System.out.println("Not principal specified. Trying to load from file ...");
+                    sa = Rhosak.loadServiceAccountFromFile();
+                    if (checkServiceAccountExists(sa.getId())) {
+                        System.err.println("Principal not found. Id: " + sa.getId());
+                        return -1;
+                    }
+                    serviceAccountId = sa.getName();
+                } catch (IOException e) {
+                    System.err.println(e.getLocalizedMessage());
+                    return -1;
                 }
             } else {
-                principal = "User:" + serviceAccountName;
+                sa = getServiceAccountById(serviceAccountId);
+                if (sa == null) {
+                    System.err.println("Principal not found. Id: " + serviceAccountId);
+                    return -1;
+                }
             }
+
+            principal = "User:" + sa.getName();
             AdminClient adminClient = null;
             try {
                 adminClient = getAdminClient();
-            } catch (NoKafkaInstanceFoundException e) {
+            } catch (NoKafkaInstanceFoundException | IOException e) {
                 System.err.println(e.getLocalizedMessage());
                 return -1;
             }
@@ -72,10 +85,11 @@ public class KafkaAclCreateCommand extends CustomCommand implements Callable<Int
             aclBindings.add(aclBinding);
             adminClient.createAcls(aclBindings).values().get(aclBinding).get();
 
-        } catch (IOException | ExecutionException | InterruptedException e) {
+        } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
         }
 
         return 0;
     }
+
 }

@@ -29,7 +29,7 @@ public class KafkaAclListCommand extends CustomCommand implements Callable<Integ
             AdminClient adminClient = null;
             try {
                 adminClient = getAdminClient();
-            } catch (NoKafkaInstanceFoundException e) {
+            } catch (NoKafkaInstanceFoundException | IOException e) {
                 System.err.println(e.getLocalizedMessage());
                 return -1;
             }
@@ -46,7 +46,7 @@ public class KafkaAclListCommand extends CustomCommand implements Callable<Integ
                         entry.operation(),
                         ab.pattern().resourceType(), ab.pattern().name());
             }
-        } catch (InterruptedException | ExecutionException | IOException e) {
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
 
