@@ -137,4 +137,34 @@ public class CustomCommand {
         }
     }
 
+    protected String getPrincipal(String serviceAccountId) {
+        String principal;
+        ServiceAccount sa;
+        if (serviceAccountId == null) {
+            try {
+                System.out.println("No principal specified. Trying to load from file ...");
+                sa = Rhosak.loadServiceAccountFromFile();
+                if (!checkServiceAccountExists(sa.getId())) {
+                    System.err.println("Principal not found. Id: " + sa.getId());
+                    return null;
+                }
+            } catch (IOException e) {
+                System.err.println(e.getLocalizedMessage());
+                return null;
+            }
+        } else {
+            sa = getServiceAccountById(serviceAccountId);
+//            System.err.println(serviceAccountId);
+//            System.err.println(sa);
+            if (sa == null) {
+                System.err.println("Principal not found. Id: " + serviceAccountId);
+                return null;
+            }
+        }
+
+        principal = "User:" + sa.getName();
+//        principal = "User:" + sa.getId();
+
+        return principal;
+    }
 }

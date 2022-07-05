@@ -1,8 +1,6 @@
 package com.redhat.rhosak.acl;
 
-import com.openshift.cloud.api.kas.models.ServiceAccount;
 import com.redhat.rhosak.CustomCommand;
-import com.redhat.rhosak.Rhosak;
 import com.redhat.rhosak.exception.NoKafkaInstanceFoundException;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.common.acl.AccessControlEntry;
@@ -24,8 +22,6 @@ import java.util.concurrent.ExecutionException;
 @CommandLine.Command(name = "create", mixinStandardHelpOptions = true, description = "Create a Kafka ACL")
 public class KafkaAclCreateCommand extends CustomCommand implements Callable<Integer> {
 
-    private static final String HOST = "*";
-
     @CommandLine.Option(names = "--operation", paramLabel = "string", required = true, description = "Set the ACL operation. Choose from: \"all\", \"alter\", \"alter-configs\", \"create\", \"delete\", \"describe\", \"describe-configs\", \"read\", \"write\"")
     String operation;
 
@@ -42,33 +38,12 @@ public class KafkaAclCreateCommand extends CustomCommand implements Callable<Int
 
     @Override
     public Integer call() {
-
+        final String HOST = "*";
         try {
-            String principal;
-            ServiceAccount sa;
-            if (serviceAccountId == null) {
-                try {
-                    System.out.println("No principal specified. Trying to load from file ...");
-                    sa = Rhosak.loadServiceAccountFromFile();
-                    if (!checkServiceAccountExists(sa.getId())) {
-                        System.err.println("Principal not found. Id: " + sa.getId());
-                        return -1;
-                    }
-                    serviceAccountId = sa.getName();
-                } catch (IOException e) {
-                    System.err.println(e.getLocalizedMessage());
-                    return -1;
-                }
-            } else {
-                sa = getServiceAccountById(serviceAccountId);
-                if (sa == null) {
-                    System.err.println("Principal not found. Id: " + serviceAccountId);
-                    return -1;
-                }
-            }
+            String principal = getPrincipal(serviceAccountId);
+            if (principal == null) return -1;
 
-            principal = "User:" + sa.getName();
-            AdminClient adminClient = null;
+            AdminClient adminClient;
             try {
                 adminClient = getAdminClient();
             } catch (NoKafkaInstanceFoundException | IOException e) {
