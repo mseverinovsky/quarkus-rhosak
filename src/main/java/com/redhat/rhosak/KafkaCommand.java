@@ -6,6 +6,7 @@ import com.openshift.cloud.api.kas.models.Error;
 import com.openshift.cloud.api.kas.models.KafkaRequest;
 import com.openshift.cloud.api.kas.models.KafkaRequestPayload;
 import com.redhat.rhosak.acl.KafkaAclCommand;
+import com.redhat.rhosak.conf.KafkaConfigCommand;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
@@ -13,8 +14,8 @@ import java.util.Objects;
 import java.util.concurrent.Callable;
 
 @Command(name = "kafka", mixinStandardHelpOptions = true, description = "Create, view and manage your Kafka instances",
-        subcommands = {KafkaCreateCommand.class, KafkaListCommand.class,
-                KafkaTopicCommand.class, KafkaDeleteCommand.class, KafkaAclCommand.class})
+        subcommands = {KafkaCreateCommand.class, KafkaListCommand.class, KafkaTopicCommand.class,
+                KafkaDeleteCommand.class, KafkaAclCommand.class, KafkaConfigCommand.class})
 public class KafkaCommand implements Callable<Integer> {
 
     @Override

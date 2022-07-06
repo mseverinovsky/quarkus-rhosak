@@ -14,6 +14,7 @@
 //SOURCES acl/KafkaAclListCommand.java
 //SOURCES acl/KafkaAclCreateCommand.java
 //SOURCES acl/KafkaAclDeleteCommand.java
+//SOURCES conf/KafkaConfigCommand.java
 //SOURCES exception/NoKafkaInstanceFoundException.java
 //SOURCES KafkaTopicCommand.java
 //SOURCES KafkaManagementClient.java
@@ -25,6 +26,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openshift.cloud.api.kas.auth.invoker.auth.OAuth;
 import com.openshift.cloud.api.kas.models.ServiceAccount;
+import com.redhat.rhosak.conf.KafkaConfigCommand;
 import org.keycloak.adapters.installed.KeycloakInstalled;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
@@ -39,7 +41,7 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 @Command(name = "rhosak", mixinStandardHelpOptions = true,
-        subcommands = {LoginCommand.class, KafkaCommand.class, ServiceAccountCommand.class})
+        subcommands = {LoginCommand.class, KafkaCommand.class, ServiceAccountCommand.class, KafkaConfigCommand.class})
 public class Rhosak implements Callable<Integer> {
 
     private static final ObjectMapper objectMapper = new ObjectMapper();
