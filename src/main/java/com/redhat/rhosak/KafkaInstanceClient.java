@@ -13,6 +13,9 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
+import static com.redhat.rhosak.CustomCommand.ACCEPT_STRING;
+import static com.redhat.rhosak.CustomCommand.OPENID_AUTH_URL;
+
 public class KafkaInstanceClient {
 
     private static final String API_INSTANCE_CLIENT_BASE_PATH = "https://identity.api.openshift.com";
@@ -59,14 +62,14 @@ public class KafkaInstanceClient {
                 };
                 try {
                     Map<String, String> res = kafkaInstanceAPIClient.invokeAPI(
-                            "/auth/realms/rhoas/protocol/openid-connect/token",
+                            OPENID_AUTH_URL,
                             "POST",
                             null,
                             null,
                             new HashMap<>(),
                             new HashMap<>(),
                             formParametersMap,
-                            "application/json",
+                            ACCEPT_STRING,
                             "application/x-www-form-urlencoded",
                             new String[]{"Bearer"},
                             genericType

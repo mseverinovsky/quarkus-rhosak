@@ -23,6 +23,9 @@ public class CustomCommand {
     private final ApiClient apiManagementClient;
     private final DefaultApi managementApi;
 
+    public static final String OPENID_AUTH_URL = "/auth/realms/rhoas/protocol/openid-connect/token";
+    public static final String ACCEPT_STRING = "application/json";
+
     public CustomCommand() {
         this.objectMapper = new ObjectMapper();
         this.apiManagementClient = KafkaManagementClient.getKafkaManagementAPIClient();
@@ -44,20 +47,19 @@ public class CustomCommand {
             put("client_secret", clientSecret);
             put("scope", "openid");
         }};
-        String acceptString = "application/json";
         String contentTypeString = "application/x-www-form-urlencoded";
         GenericType<Map<String, String>> returnTypeClass = new GenericType<>() {
         };
-        String URL = "/auth/realms/rhoas/protocol/openid-connect/token";
         try {
-            Map<String, String> res = apiInstanceClient.invokeAPI(URL,
+            Map<String, String> res = apiInstanceClient.invokeAPI(
+                    OPENID_AUTH_URL,
                     "POST",
                     null,
                     null,
                     new HashMap<>(),
                     new HashMap<>(),
                     formParametersMap,
-                    acceptString,
+                    ACCEPT_STRING,
                     contentTypeString,
                     new String[]{"Bearer"},
                     returnTypeClass
