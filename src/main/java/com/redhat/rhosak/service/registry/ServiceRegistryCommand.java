@@ -7,7 +7,7 @@ import java.util.concurrent.Callable;
 
 @Command(name = "service-registry", mixinStandardHelpOptions = true,
         subcommands = {ServiceRegistryArtifactCommand.class, ServiceRegistryCreateCommand.class,
-                ServiceRegistryDescribeCommand.class, ServiceRegistryListCommand.class})
+                ServiceRegistryDeleteCommand.class, ServiceRegistryDescribeCommand.class, ServiceRegistryListCommand.class})
 public class ServiceRegistryCommand implements Callable<Integer> {
     public ServiceRegistryCommand() {}
 
