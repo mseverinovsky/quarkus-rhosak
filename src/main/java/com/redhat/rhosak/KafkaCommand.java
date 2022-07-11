@@ -14,8 +14,8 @@ import java.util.Objects;
 import java.util.concurrent.Callable;
 
 @Command(name = "kafka", mixinStandardHelpOptions = true, description = "Create, view and manage your Kafka instances",
-        subcommands = {KafkaCreateCommand.class, KafkaListCommand.class, KafkaTopicCommand.class,
-                KafkaDeleteCommand.class, KafkaAclCommand.class, KafkaConfigCommand.class})
+        subcommands = {KafkaCreateCommand.class, KafkaListCommand.class, KafkaDeleteCommand.class,
+                KafkaTopicCommand.class, KafkaAclCommand.class, KafkaConfigCommand.class})
 public class KafkaCommand implements Callable<Integer> {
 
     @Override
