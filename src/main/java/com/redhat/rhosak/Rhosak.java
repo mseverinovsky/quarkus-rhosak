@@ -15,8 +15,9 @@
 //SOURCES acl/KafkaAclCreateCommand.java
 //SOURCES acl/KafkaAclDeleteCommand.java
 //SOURCES service/registry/ServiceRegistryCommand.java
-//SOURCES service/registry/ServiceRegistryListCommand.java
+//SOURCES service/registry/ServiceRegistryCreateCommand.java
 //SOURCES service/registry/ServiceRegistryDescribeCommand.java
+//SOURCES service/registry/ServiceRegistryListCommand.java
 //SOURCES service/registry/artifact/ServiceRegistryArtifactCommand.java
 //SOURCES conf/KafkaConfigCommand.java
 //SOURCES exception/NoKafkaInstanceFoundException.java

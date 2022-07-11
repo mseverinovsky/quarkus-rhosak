@@ -4,7 +4,7 @@ import picocli.CommandLine;
 
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "artifact", mixinStandardHelpOptions = true)
+@CommandLine.Command(name = "artifact", mixinStandardHelpOptions = true, description = "Manage Service Registry schema and API artifacts")
 public class ServiceRegistryArtifactCommand implements Callable<Integer> {
 
     public ServiceRegistryArtifactCommand() {}

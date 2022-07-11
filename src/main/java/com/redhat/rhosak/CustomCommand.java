@@ -20,22 +20,25 @@ import java.util.Map;
 
 public class CustomCommand {
     private final ObjectMapper objectMapper;
-    private final ApiClient apiManagementClient;
     private final DefaultApi managementApi;
 
-    public static final String OPENID_AUTH_URL = "/auth/realms/rhoas/protocol/openid-connect/token";
+    public static final String OPENID_AUTH_URL = "/auth/realms/rhoas/protocol/openid_connect/token";
+    public static final String SERVICE_REGISTRY_MGMT_URL = "/api/serviceregistry_mgmt/v1/registries";
+
     public static final String ACCEPT_STRING = "application/json";
+    public static final String CONTENT_TYPE_APPLICATION_JSON = "application/json";
+    public static final String APPLICATION_X_WWW_FORM_URLENCODED = "application/x_www_form_urlencoded";
 
     public CustomCommand() {
         this.objectMapper = new ObjectMapper();
-        this.apiManagementClient = KafkaManagementClient.getKafkaManagementAPIClient();
+        ApiClient apiManagementClient = KafkaManagementClient.getKafkaManagementAPIClient();
         this.managementApi = new DefaultApi(apiManagementClient);
     }
 
     protected void saveServiceAccountToFile(com.openshift.cloud.api.kas.auth.invoker.ApiClient apiInstanceClient,
                                             ServiceAccount serviceAccount, String fileFormat) throws IOException {
         Path saFile = Path.of(RhosakFiles.SA_FILE_NAME + "." + fileFormat);
-        serviceAccount.setCreatedAt(null); // otherwise .rhosak-sa file will be broken
+        serviceAccount.setCreatedAt(null); // otherwise .rhosak_sa file will be broken
         objectMapper.writeValue(saFile.toFile(), serviceAccount);
 
         String clientId = serviceAccount.getClientId();
@@ -47,7 +50,6 @@ public class CustomCommand {
             put("client_secret", clientSecret);
             put("scope", "openid");
         }};
-        String contentTypeString = "application/x-www-form-urlencoded";
         GenericType<Map<String, String>> returnTypeClass = new GenericType<>() {
         };
         try {
@@ -60,7 +62,7 @@ public class CustomCommand {
                     new HashMap<>(),
                     formParametersMap,
                     ACCEPT_STRING,
-                    contentTypeString,
+                    APPLICATION_X_WWW_FORM_URLENCODED,
                     new String[]{"Bearer"},
                     returnTypeClass
             );
@@ -84,7 +86,7 @@ public class CustomCommand {
     }
 
     protected String getServerUrl() throws NoKafkaInstanceFoundException {
-        return "https://admin-server-" + getBootstrapServerUrl();
+        return "https://admin_server_" + getBootstrapServerUrl();
     }
 
     protected String getBootstrapServerUrl() throws NoKafkaInstanceFoundException {

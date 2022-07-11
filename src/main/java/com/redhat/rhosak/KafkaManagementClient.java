@@ -11,7 +11,8 @@ import java.time.Duration;
 
 public class KafkaManagementClient {
 
-    private static final String API_CLIENT_BASE_PATH = "https://api.openshift.com";
+    public static final String API_CLIENT_BASE_PATH = "https://api.openshift.com";
+
     private static final Duration MIN_TOKEN_VALIDITY = Duration.ofSeconds(30);
     private static ApiClient kafkaManagementAPIClientInstance;
     private static final ObjectMapper objectMapper = new ObjectMapper();
