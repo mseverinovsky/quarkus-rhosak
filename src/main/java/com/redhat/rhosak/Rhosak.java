@@ -1,7 +1,7 @@
 ///usr/bin/env jbang "$0" "$@" ; exit $?
 //DEPS org.keycloak:keycloak-installed-adapter:18.0.0
-//DEPS com.redhat.cloud:kafka-management-sdk:0.20.4
-//DEPS com.redhat.cloud:kafka-instance-sdk:0.20.4
+//DEPS com.redhat.cloud:kafka-management-sdk:0.22.0
+//DEPS com.redhat.cloud:kafka-instance-sdk:0.22.0
 //DEPS info.picocli:picocli:4.6.3
 //DEPS com.fasterxml.jackson.core:jackson-core:2.13.3
 //DEPS com.fasterxml.jackson.core:jackson-annotations:2.13.3

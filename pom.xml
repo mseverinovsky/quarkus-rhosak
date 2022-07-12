@@ -15,8 +15,8 @@
     <quarkus.platform.group-id>io.quarkus.platform</quarkus.platform.group-id>
     <quarkus.platform.version>2.9.0.Final</quarkus.platform.version>
     <surefire-plugin.version>3.0.0-M5</surefire-plugin.version>
-    <kafka-management-sdk.version>0.20.4</kafka-management-sdk.version>
-    <kafka-instance-sdk.version>0.20.4</kafka-instance-sdk.version>
+    <kafka-management-sdk.version>0.22.0</kafka-management-sdk.version>
+    <kafka-instance-sdk.version>0.22.0</kafka-instance-sdk.version>
     <keycloak-installed-adapter.version>18.0.0</keycloak-installed-adapter.version>
   </properties>
   <dependencyManagement>
