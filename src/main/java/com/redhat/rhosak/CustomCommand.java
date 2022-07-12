@@ -11,7 +11,6 @@ import com.redhat.rhosak.exception.NoKafkaInstanceFoundException;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 
-import javax.ws.rs.core.GenericType;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
@@ -40,40 +39,6 @@ public class CustomCommand {
         Path saFile = Path.of(RhosakFiles.SA_FILE_NAME + "." + fileFormat);
         serviceAccount.setCreatedAt(null); // otherwise .rhosak_sa file will be broken
         objectMapper.writeValue(saFile.toFile(), serviceAccount);
-
-        String clientId = serviceAccount.getClientId();
-        String clientSecret = serviceAccount.getClientSecret();
-
-        Map<String, Object> formParametersMap = new HashMap<>() {{
-            put("grant_type", "client_credentials");
-            put("client_id", clientId);
-            put("client_secret", clientSecret);
-            put("scope", "openid");
-        }};
-        GenericType<Map<String, String>> returnTypeClass = new GenericType<>() {
-        };
-        try {
-            Map<String, String> res = apiInstanceClient.invokeAPI(
-                    OPENID_AUTH_URL,
-                    "POST",
-                    null,
-                    null,
-                    new HashMap<>(),
-                    new HashMap<>(),
-                    formParametersMap,
-                    ACCEPT_STRING,
-                    APPLICATION_X_WWW_FORM_URLENCODED,
-                    new String[]{"Bearer"},
-                    returnTypeClass
-            );
-
-            Path apiTokensFile = Path.of(RhosakFiles.RHOSAK_API_CREDS_FILE_NAME + "." + fileFormat);
-            RhoasTokens tokens = new RhoasTokens();
-            tokens.setAccess_token(res.get("access_token"));
-            objectMapper.writeValue(apiTokensFile.toFile(), tokens);
-        } catch (com.openshift.cloud.api.kas.auth.invoker.ApiException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     protected String rhosakApiToken() {
@@ -86,7 +51,7 @@ public class CustomCommand {
     }
 
     protected String getServerUrl() throws NoKafkaInstanceFoundException {
-        return "https://admin_server_" + getBootstrapServerUrl();
+        return "https://admin-server-" + getBootstrapServerUrl();
     }
 
     protected String getBootstrapServerUrl() throws NoKafkaInstanceFoundException {

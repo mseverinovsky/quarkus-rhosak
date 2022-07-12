@@ -111,7 +111,7 @@ class ServiceAccountResetCredentialsCommand extends CustomCommand implements Cal
     private final SecurityApi securityAPI;
     private final com.openshift.cloud.api.kas.auth.invoker.ApiClient apiInstanceClient;
 
-    @CommandLine.Option(names = "--id", paramLabel = "string", required = true, description = "The unique ID of the service account to delete")
+    @CommandLine.Option(names = "--id", paramLabel = "string", required = true, description = "The unique ID of the service account to reset credentials")
     String id;
 
     @CommandLine.Option(names = "--file-format", paramLabel = "string", defaultValue = "json",

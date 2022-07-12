@@ -45,9 +45,8 @@ class KafkaTopicCreateCommand extends CustomCommand implements Callable<Integer>
     @Override
     public Integer call() {
         try {
-            String accessToken = KafkaInstanceClient.checkTokenExpirationAndGetNewOne();
             try {
-                createInstanceTopic(accessToken, topicName, retentionMs);
+                createInstanceTopic(topicName, retentionMs);
             } catch (NoKafkaInstanceFoundException e) {
                 System.err.println(e.getLocalizedMessage());
                 return -1;
@@ -58,16 +57,11 @@ class KafkaTopicCreateCommand extends CustomCommand implements Callable<Integer>
         return 0;
     }
 
-    private void createInstanceTopic(String accessToken, String topicName, String retentionMs) throws ApiException, NoKafkaInstanceFoundException {
+    private void createInstanceTopic(String topicName, String retentionMs) throws ApiException, NoKafkaInstanceFoundException {
         NewTopicInput topicInput = createTopicInput(topicName, retentionMs);
         String serverUrl = getServerUrl();
 
-        if (accessToken == null || accessToken.equals("")) {
-            accessToken = rhosakApiToken();
-        }
-
         apiInstanceClient.setBasePath(serverUrl);
-        apiInstanceClient.setAccessToken(accessToken);
 
         try {
             Topic topic = apiInstanceTopic.createTopic(topicInput);
@@ -112,9 +106,8 @@ class KafkaTopicListCommand extends CustomCommand implements Callable<Integer> {
 
     @Override
     public Integer call() {
-        String accessToken = KafkaInstanceClient.checkTokenExpirationAndGetNewOne();
         try {
-            listTopics(accessToken);
+            listTopics();
         } catch (NoKafkaInstanceFoundException e) {
             System.err.println(e.getLocalizedMessage());
             return -1;
@@ -122,16 +115,9 @@ class KafkaTopicListCommand extends CustomCommand implements Callable<Integer> {
         return 0;
     }
 
-    private void listTopics(String accessToken) throws NoKafkaInstanceFoundException {
+    private void listTopics(/*String accessToken*/) throws NoKafkaInstanceFoundException {
         String serverUrl = getServerUrl();
-
-        if (accessToken == null || accessToken.equals("")) {
-            accessToken = rhosakApiToken();
-        }
-
         apiInstanceClient.setBasePath(serverUrl);
-        apiInstanceClient.setAccessToken(accessToken);
-
         try {
             TopicsList topicsList = apiInstanceTopic.getTopics(null, null, null, null, null);
             System.out.print(
@@ -178,5 +164,3 @@ class KafkaTopicDeleteCommand extends CustomCommand implements Callable<Integer>
         return 0;
     }
 }
-
-
