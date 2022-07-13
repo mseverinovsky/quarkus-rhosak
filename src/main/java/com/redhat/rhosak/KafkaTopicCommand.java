@@ -148,6 +148,11 @@ class KafkaTopicDeleteCommand extends CustomCommand implements Callable<Integer>
 
     public KafkaTopicDeleteCommand() {
         ApiClient apiInstanceClient = KafkaInstanceClient.getKafkaInstanceAPIClient();
+        try {
+            apiInstanceClient.setBasePath(getServerUrl());
+        } catch (NoKafkaInstanceFoundException e) {
+            e.printStackTrace();
+        }
         this.apiInstanceTopic = new TopicsApi(apiInstanceClient);
     }
 
@@ -159,7 +164,12 @@ class KafkaTopicDeleteCommand extends CustomCommand implements Callable<Integer>
         try {
             apiInstanceTopic.deleteTopic(topicName);
         } catch (ApiException e) {
-            throw new RuntimeException(e);
+            if (e.getCode() == 404) {
+                System.err.printf(">>> Topic \"%s\" does not exist!\n", topicName);
+                return -1;
+            } else {
+                throw new RuntimeException(e);
+            }
         }
         return 0;
     }
