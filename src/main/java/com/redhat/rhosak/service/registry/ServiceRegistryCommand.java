@@ -1,6 +1,7 @@
 package com.redhat.rhosak.service.registry;
 
 import com.redhat.rhosak.service.registry.artifact.ServiceRegistryArtifactCommand;
+import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 import java.util.concurrent.Callable;
@@ -13,7 +14,7 @@ public class ServiceRegistryCommand implements Callable<Integer> {
 
     @Override
     public Integer call() {
-
+        CommandLine.usage(this, System.out);
         return 0;
     }
 }

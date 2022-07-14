@@ -16,7 +16,7 @@ import java.util.Collection;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
-@CommandLine.Command(name = "list", mixinStandardHelpOptions = true, description = "Create a Kafka ACL")
+@CommandLine.Command(name = "list", mixinStandardHelpOptions = true, description = "Print Kafka ACL list")
 public class KafkaAclListCommand extends CustomCommand implements Callable<Integer> {
 
 //    @CommandLine.Option(names = "--user", paramLabel = "string", description = "User ID to be used as principal")

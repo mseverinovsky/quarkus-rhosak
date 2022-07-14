@@ -1,5 +1,6 @@
 package com.redhat.rhosak.acl;
 
+import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 import java.util.concurrent.Callable;
@@ -14,6 +15,7 @@ public class KafkaAclCommand implements Callable<Integer> {
 
     @Override
     public Integer call() {
+        CommandLine.usage(this, System.out);
         return 0;
     }
 }

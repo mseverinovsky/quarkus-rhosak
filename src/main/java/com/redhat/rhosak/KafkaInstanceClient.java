@@ -28,7 +28,6 @@ public class KafkaInstanceClient {
     public static com.openshift.cloud.api.kas.auth.invoker.ApiClient getKafkaInstanceAPIClient() {
         if (kafkaInstanceAPIClient == null) {
             kafkaInstanceAPIClient = com.openshift.cloud.api.kas.auth.invoker.Configuration.getDefaultApiClient();
-            kafkaInstanceAPIClient.setBasePath(API_INSTANCE_CLIENT_BASE_PATH);
             String tokenString = KafkaManagementClient.getBearerToken();
 
             OAuth bearer = (OAuth) kafkaInstanceAPIClient.getAuthentication("Bearer");
