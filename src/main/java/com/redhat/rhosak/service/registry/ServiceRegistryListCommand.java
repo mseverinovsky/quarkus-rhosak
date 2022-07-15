@@ -26,8 +26,6 @@ class ServiceRegistryListCommand extends CustomCommand implements Callable<Integ
 
     @Override
     public Integer call() {
-        Map<String, Object> formParametersMap = new HashMap<>();
-        GenericType<Map<String, Object>> returnTypeClass = new GenericType<>() {};
         try {
             Map<String, Object> res = apiInstanceClient.invokeAPI(
                     SERVICE_REGISTRY_MGMT_URL,
@@ -36,11 +34,11 @@ class ServiceRegistryListCommand extends CustomCommand implements Callable<Integ
                     null,
                     new HashMap<>(),
                     new HashMap<>(),
-                    formParametersMap,
+                    new HashMap<>(),
                     ACCEPT_STRING,
                     APPLICATION_X_WWW_FORM_URLENCODED,
                     new String[]{"Bearer"},
-                    returnTypeClass
+                    new GenericType<>() {}
             );
 
             if ((res.get("items")) == null || ((ArrayList)res.get("items")).size() == 0) {

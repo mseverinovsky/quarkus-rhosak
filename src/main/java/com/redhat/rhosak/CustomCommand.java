@@ -23,6 +23,7 @@ public class CustomCommand {
 
     public static final String OPENID_AUTH_URL = "/auth/realms/rhoas/protocol/openid_connect/token";
     public static final String SERVICE_REGISTRY_MGMT_URL = "/api/serviceregistry_mgmt/v1/registries";
+    public static final String ARTIFACTS_MGMT_URL = "/api/serviceregistry_mgmt/v1/registries";
 
     public static final String ACCEPT_STRING = "application/json";
     public static final String CONTENT_TYPE_APPLICATION_JSON = "application/json";

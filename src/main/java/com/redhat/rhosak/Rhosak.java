@@ -6,8 +6,6 @@
 //DEPS com.fasterxml.jackson.core:jackson-core:2.13.3
 //DEPS com.fasterxml.jackson.core:jackson-annotations:2.13.3
 //DEPS org.apache.kafka:kafka-clients:3.2.0
-//DEPS io.apicurio:apicurio-registry-common:2.2.5.Final
-//DEPS io.apicurio:apicurio-registry-client:2.2.5.Final
 //SOURCES RhosakFiles.java
 //SOURCES LoginCommand.java
 //SOURCES KafkaCommand.java
@@ -23,6 +21,8 @@
 //SOURCES service/registry/ServiceRegistryListCommand.java
 //SOURCES service/registry/artifact/ServiceRegistryArtifactCommand.java
 //SOURCES service/registry/artifact/ServiceRegistryArtifactCreateCommand.java
+//SOURCES service/registry/artifact/ServiceRegistryArtifactGetCommand.java
+//SOURCES service/registry/artifact/ServiceRegistryArtifactListCommand.java
 //SOURCES conf/KafkaConfigCommand.java
 //SOURCES exception/NoKafkaInstanceFoundException.java
 //SOURCES KafkaTopicCommand.java

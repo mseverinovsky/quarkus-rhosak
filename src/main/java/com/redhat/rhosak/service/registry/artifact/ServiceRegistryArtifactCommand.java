@@ -4,16 +4,17 @@ import picocli.CommandLine;
 
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "artifact", mixinStandardHelpOptions = true, description = "Manage Service Registry schema and API artifacts")
+@CommandLine.Command(name = "artifact", mixinStandardHelpOptions = true, subcommands = {
+        ServiceRegistryArtifactCreateCommand.class, ServiceRegistryArtifactGetCommand.class,
+        ServiceRegistryArtifactListCommand.class},
+        description = "Manage Service Registry schema and API artifacts")
 public class ServiceRegistryArtifactCommand implements Callable<Integer> {
 
     public ServiceRegistryArtifactCommand() {}
 
     @Override
     public Integer call() {
-//        String registryUrl = "https://bu98.serviceregistry.rhcloud.com/t/a2a99e47-3ea4-4f11-ba80-89ed30b57b6b";
-//        RegistryClient client = RegistryClientFactory.create(registryUrl);
-//        client.createArtifact()
+        CommandLine.usage(this, System.out);
 
         return 0;
     }
