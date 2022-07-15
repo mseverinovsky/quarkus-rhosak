@@ -48,12 +48,14 @@ class ServiceRegistryListCommand extends CustomCommand implements Callable<Integ
                 return -1;
             } else {
                 System.err.println(">>> Response items count: " + ((ArrayList)res.get("items")).size());
+                System.out.println("===================================================");
             }
             for (LinkedHashMap<String, Object> item : (ArrayList<LinkedHashMap<String, Object>>)res.get("items")) {
-                System.out.println("  id: " + item.get("id"));
-                System.out.println("  name: " + item.get("name"));
-                System.out.println("  owner: " + item.get("owner"));
-                System.out.println("  status: " + item.get("status"));
+                System.out.println("           id: " + item.get("id"));
+                System.out.println("         name: " + item.get("name"));
+                System.out.println("        owner: " + item.get("owner"));
+                System.out.println("       status: " + item.get("status"));
+                System.out.println("  registryUrl: " + item.get("registryUrl"));
                 System.out.println("===================================================");
             }
         } catch (com.openshift.cloud.api.kas.auth.invoker.ApiException e) {
