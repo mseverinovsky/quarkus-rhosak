@@ -38,7 +38,7 @@ class ServiceRegistryArtifactGetCommand extends CustomCommand implements Callabl
             // Get Service Registry list
             Map<String, Object> res = apiInstanceClient.invokeAPI(
                     SERVICE_REGISTRY_MGMT_URL, "GET", null, null,
-                    new HashMap<>(), new HashMap<>(), new HashMap<>(), ACCEPT_STRING, APPLICATION_X_WWW_FORM_URLENCODED,
+                    new HashMap<>(), new HashMap<>(), new HashMap<>(), ACCEPT_APPLICATION_JSON, APPLICATION_X_WWW_FORM_URLENCODED,
                     new String[]{"Bearer"}, new GenericType<>() {}
             );
 
@@ -54,7 +54,7 @@ class ServiceRegistryArtifactGetCommand extends CustomCommand implements Callabl
 
                 Map<String, Object> artifactsMap = apiInstanceClient.invokeAPI(
                         ARTIFACT_LIST_URL + artifactId, "GET", null, null,
-                        new HashMap<>(), new HashMap<>(), new HashMap<>(), ACCEPT_STRING, APPLICATION_X_WWW_FORM_URLENCODED,
+                        new HashMap<>(), new HashMap<>(), new HashMap<>(), ACCEPT_APPLICATION_JSON, APPLICATION_X_WWW_FORM_URLENCODED,
                         new String[]{"Bearer"}, new GenericType<>() {}
                 );
                 if (artifactsMap == null || artifactsMap.size() == 0) {
@@ -62,10 +62,10 @@ class ServiceRegistryArtifactGetCommand extends CustomCommand implements Callabl
                     return -1;
                 } else {
                     String registryId = (String) map.get("id");
-                    System.out.println("============================================");
+                    System.out.println("=================================================");
                     System.out.println("Registry ID: " + registryId);
                     System.out.println("Artifact ID: " + artifactId);
-                    System.out.println("============================================");
+                    System.out.println("=================================================");
                     System.out.println(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(artifactsMap));
                 }
             }

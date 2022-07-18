@@ -32,7 +32,7 @@ class ServiceRegistryArtifactListCommand extends CustomCommand implements Callab
             // Get Service Registry list
             Map<String, Object> res = apiInstanceClient.invokeAPI(
                     SERVICE_REGISTRY_MGMT_URL, "GET", null, null,
-                    new HashMap<>(), new HashMap<>(), new HashMap<>(), ACCEPT_STRING, APPLICATION_X_WWW_FORM_URLENCODED,
+                    new HashMap<>(), new HashMap<>(), new HashMap<>(), ACCEPT_APPLICATION_JSON, APPLICATION_X_WWW_FORM_URLENCODED,
                     new String[]{"Bearer"}, new GenericType<>() {}
             );
 
@@ -48,7 +48,7 @@ class ServiceRegistryArtifactListCommand extends CustomCommand implements Callab
 
                 Map<String, Object> artifactsMap = apiInstanceClient.invokeAPI(
                         ARTIFACT_LIST_URL, "GET", null, null,
-                        new HashMap<>(), new HashMap<>(), new HashMap<>(), ACCEPT_STRING, APPLICATION_X_WWW_FORM_URLENCODED,
+                        new HashMap<>(), new HashMap<>(), new HashMap<>(), ACCEPT_APPLICATION_JSON, APPLICATION_X_WWW_FORM_URLENCODED,
                         new String[]{"Bearer"}, new GenericType<>() {}
                 );
                 if ((artifactsMap.get("artifacts")) == null || ((ArrayList)artifactsMap.get("artifacts")).size() == 0) {

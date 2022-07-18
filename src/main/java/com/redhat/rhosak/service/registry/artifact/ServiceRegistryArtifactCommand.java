@@ -6,7 +6,7 @@ import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "artifact", mixinStandardHelpOptions = true, subcommands = {
         ServiceRegistryArtifactCreateCommand.class, ServiceRegistryArtifactGetCommand.class,
-        ServiceRegistryArtifactListCommand.class},
+        ServiceRegistryArtifactDeleteCommand.class, ServiceRegistryArtifactListCommand.class},
         description = "Manage Service Registry schema and API artifacts")
 public class ServiceRegistryArtifactCommand implements Callable<Integer> {
 

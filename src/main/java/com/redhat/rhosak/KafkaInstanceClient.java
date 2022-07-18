@@ -13,7 +13,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.redhat.rhosak.CustomCommand.ACCEPT_STRING;
+import static com.redhat.rhosak.CustomCommand.ACCEPT_APPLICATION_JSON;
 import static com.redhat.rhosak.CustomCommand.OPENID_AUTH_URL;
 
 public class KafkaInstanceClient {
@@ -68,7 +68,7 @@ public class KafkaInstanceClient {
                             new HashMap<>(),
                             new HashMap<>(),
                             formParametersMap,
-                            ACCEPT_STRING,
+                            ACCEPT_APPLICATION_JSON,
                             "application/x-www-form-urlencoded",
                             new String[]{"Bearer"},
                             genericType

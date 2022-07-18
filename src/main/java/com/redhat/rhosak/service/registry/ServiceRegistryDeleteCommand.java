@@ -38,7 +38,7 @@ class ServiceRegistryDeleteCommand extends CustomCommand implements Callable<Int
                     new HashMap<>(),
                     new HashMap<>(),
                     formParametersMap,
-                    ACCEPT_STRING,
+                    ACCEPT_APPLICATION_JSON,
                     APPLICATION_X_WWW_FORM_URLENCODED,
                     new String[]{"Bearer"},
                     returnTypeClass

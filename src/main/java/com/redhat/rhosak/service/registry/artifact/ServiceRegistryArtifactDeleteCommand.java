@@ -16,15 +16,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Callable;
 
-@CommandLine.Command(name = "create", mixinStandardHelpOptions = true, description = "Create new artifact")
-class ServiceRegistryArtifactCreateCommand extends CustomCommand implements Callable<Integer> {
+@CommandLine.Command(name = "delete", mixinStandardHelpOptions = true, description = "Delete the artifact")
+class ServiceRegistryArtifactDeleteCommand extends CustomCommand implements Callable<Integer> {
 
     private final ApiClient apiInstanceClient;
 
     @CommandLine.Option(names = "--file", paramLabel = "string", description = "File location of the artifact")
     String fileName;
 
-    public ServiceRegistryArtifactCreateCommand() {
+    public ServiceRegistryArtifactDeleteCommand() {
         this.apiInstanceClient = KafkaInstanceClient.getKafkaInstanceAPIClient();
     }
 

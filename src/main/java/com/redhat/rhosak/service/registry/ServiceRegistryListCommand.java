@@ -35,7 +35,7 @@ class ServiceRegistryListCommand extends CustomCommand implements Callable<Integ
                     new HashMap<>(),
                     new HashMap<>(),
                     new HashMap<>(),
-                    ACCEPT_STRING,
+                    ACCEPT_APPLICATION_JSON,
                     APPLICATION_X_WWW_FORM_URLENCODED,
                     new String[]{"Bearer"},
                     new GenericType<>() {}
