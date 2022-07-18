@@ -21,7 +21,7 @@ import static com.redhat.rhosak.KafkaManagementClient.API_CLIENT_BASE_PATH;
         description = "Get an artifact from the registry based on the artifact ID")
 class ServiceRegistryArtifactGetCommand extends CustomCommand implements Callable<Integer> {
 
-    private final String ARTIFACT_LIST_URL = "/apis/registry/v2/groups/default/artifacts/";
+    private final String ARTIFACT_GET_URL = "/apis/registry/v2/groups/default/artifacts/";
     private final ApiClient apiInstanceClient;
 
     @CommandLine.Option(names = "--artifact-id", paramLabel = "string", required = true, description = "ID of the artifact")
@@ -53,7 +53,7 @@ class ServiceRegistryArtifactGetCommand extends CustomCommand implements Callabl
                 apiInstanceClient.setBasePath(registryUrl);
 
                 Map<String, Object> artifactsMap = apiInstanceClient.invokeAPI(
-                        ARTIFACT_LIST_URL + artifactId, "GET", null, null,
+                        ARTIFACT_GET_URL + artifactId, "GET", null, null,
                         new HashMap<>(), new HashMap<>(), new HashMap<>(), ACCEPT_APPLICATION_JSON, APPLICATION_X_WWW_FORM_URLENCODED,
                         new String[]{"Bearer"}, new GenericType<>() {}
                 );

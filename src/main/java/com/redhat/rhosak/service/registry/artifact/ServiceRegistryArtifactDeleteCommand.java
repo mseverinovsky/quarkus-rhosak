@@ -9,11 +9,7 @@ import com.redhat.rhosak.service.registry.ServiceRegistryUtils;
 import picocli.CommandLine;
 
 import javax.ws.rs.core.GenericType;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "delete", mixinStandardHelpOptions = true, description = "Delete the artifact")
@@ -21,8 +17,8 @@ class ServiceRegistryArtifactDeleteCommand extends CustomCommand implements Call
 
     private final ApiClient apiInstanceClient;
 
-    @CommandLine.Option(names = "--file", paramLabel = "string", description = "File location of the artifact")
-    String fileName;
+    @CommandLine.Option(names = "--artifact-id", required = true, paramLabel = "string", description = "ID of the artifact")
+    String artifactId;
 
     public ServiceRegistryArtifactDeleteCommand() {
         this.apiInstanceClient = KafkaInstanceClient.getKafkaInstanceAPIClient();
@@ -30,35 +26,18 @@ class ServiceRegistryArtifactDeleteCommand extends CustomCommand implements Call
 
     @Override
     public Integer call() {
-
-        String body;
-        try {
-            if (fileName == null) {
-                // read from System.in
-                body = new String(System.in.readAllBytes());
-            } else {
-                // read the artifact from file
-                body = new String(Files.readAllBytes(Paths.get(fileName)));
-            }
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
         ServiceRegistryDTO serviceRegistry = ServiceRegistryUtils.getServiceRegistry();
         String registryUrl = serviceRegistry.getRegistryUrl();
         apiInstanceClient.setBasePath(registryUrl);
-        final String ARTIFACT_CREATE_URL = "/apis/registry/v2/groups/default/artifacts";
+        final String ARTIFACT_DELETE_URL = "/apis/registry/v2/groups/default/artifacts/";
 
         try {
-            Map<String, Object> artifactsMap = apiInstanceClient.invokeAPI(
-                    ARTIFACT_CREATE_URL, "POST", null, body,
+            apiInstanceClient.invokeAPI(
+                    ARTIFACT_DELETE_URL + artifactId, "DELETE", null, null,
                     new HashMap<>(), new HashMap<>(), new HashMap<>(), ACCEPT_APPLICATION_JSON, CONTENT_TYPE_APPLICATION_JSON,
                     new String[]{"Bearer"}, new GenericType<>() {}
             );
-            System.out.println(">>> Artifact created");
-            System.out.println("You can view or manage this artifact in your browser by accessing:");
-            System.out.printf("https://console.redhat.com/application-services/service-registry/t/%s/artifacts/default/%s/versions/1\n",
-                    serviceRegistry.getId(), artifactsMap.get("id"));
+            System.out.println(">>> Artifact deleted: " + artifactId);
         } catch (ApiException e) {
             e.printStackTrace();
         }
