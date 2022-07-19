@@ -20,6 +20,8 @@ public class KafkaCommand implements Callable<Integer> {
 
     @Override
     public Integer call() {
+        CommandLine.usage(this, System.out);
+
         return 0;
     }
 }
