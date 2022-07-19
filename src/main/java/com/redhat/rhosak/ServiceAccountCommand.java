@@ -10,7 +10,10 @@ import picocli.CommandLine.Command;
 import java.io.IOException;
 import java.util.concurrent.Callable;
 
-@Command(name = "service-account", mixinStandardHelpOptions = true, subcommands = {ServiceAccountCreateCommand.class, ServiceAccountListCommand.class, ServiceAccountResetCredentialsCommand.class, ServiceAccountDeleteCommand.class})
+@Command(name = "service-account", mixinStandardHelpOptions = true,
+        subcommands = {ServiceAccountCreateCommand.class, ServiceAccountListCommand.class,
+                ServiceAccountResetCredentialsCommand.class, ServiceAccountDescribeCommand.class,
+                ServiceAccountDeleteCommand.class})
 public class ServiceAccountCommand implements Callable<Integer> {
 
     @Override
@@ -99,6 +102,34 @@ class ServiceAccountDeleteCommand implements Callable<Integer> {
     public Integer call() {
         try {
             securityAPI.deleteServiceAccountById(id);
+        } catch (ApiException e) {
+            throw new RuntimeException(e);
+        }
+        return 0;
+    }
+}
+
+@Command(name = "describe", mixinStandardHelpOptions = true, description = "View configuration details for a service account")
+class ServiceAccountDescribeCommand implements Callable<Integer> {
+
+    private final SecurityApi securityAPI;
+
+    @CommandLine.Option(names = "--id", paramLabel = "string", required = true, description = "The unique ID of the service account to view")
+    String id;
+
+    public ServiceAccountDescribeCommand() {
+        this.securityAPI = new SecurityApi(KafkaManagementClient.getKafkaManagementAPIClient());
+    }
+
+    @Override
+    public Integer call() {
+        try {
+            ServiceAccount serviceAccount = securityAPI.getServiceAccountById(id);
+            System.out.println(serviceAccount.toString()
+                    .replaceFirst("class ServiceAccount \\{","\n===== Service Account =====")
+                    .replaceAll("\\n[\\s]+","\n")
+                    .replaceFirst("\\}","")
+            );
         } catch (ApiException e) {
             throw new RuntimeException(e);
         }
