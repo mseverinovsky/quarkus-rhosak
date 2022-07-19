@@ -14,12 +14,13 @@ import java.util.concurrent.Callable;
 
 import static com.redhat.rhosak.KafkaManagementClient.API_CLIENT_BASE_PATH;
 
-@CommandLine.Command(name = "list", mixinStandardHelpOptions = true, description = "List all Service Registry instances for your account")
-class ServiceRegistryListCommand extends CustomCommand implements Callable<Integer> {
+@CommandLine.Command(name = "config", mixinStandardHelpOptions = true,
+        description = "Generate and print Service Registry configuration")
+class ServiceRegistryConfigCommand extends CustomCommand implements Callable<Integer> {
 
     private final ApiClient apiInstanceClient;
 
-    public ServiceRegistryListCommand() {
+    public ServiceRegistryConfigCommand() {
         this.apiInstanceClient = KafkaInstanceClient.getKafkaInstanceAPIClient();
         apiInstanceClient.setBasePath(API_CLIENT_BASE_PATH);
     }
@@ -44,12 +45,10 @@ class ServiceRegistryListCommand extends CustomCommand implements Callable<Integ
             if ((res.get("items")) == null || ((ArrayList)res.get("items")).size() == 0) {
                 System.err.println(">>> No Service Registries found!");
                 return -1;
-            } else {
-                System.err.println(">>> Response items count: " + ((ArrayList)res.get("items")).size());
-                System.out.println("===================================================");
             }
             for (LinkedHashMap<String, Object> item : (ArrayList<LinkedHashMap<String, Object>>)res.get("items")) {
-                item.forEach((key, value) -> System.out.printf("%20s : %s\n", key, value));
+                System.out.println("# ===== Service Registry configuration ====================");
+                item.forEach((key, value) -> System.out.printf("%s=%s\n", key, value));
             }
         } catch (com.openshift.cloud.api.kas.auth.invoker.ApiException e) {
             throw new RuntimeException(e);

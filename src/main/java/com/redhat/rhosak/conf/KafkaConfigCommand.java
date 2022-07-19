@@ -19,7 +19,7 @@ public class KafkaConfigCommand extends CustomCommand implements Callable<Intege
     public Integer call() {
 
         try {
-            System.out.println("========== Configuration for application.properties ==========================");
+            System.out.println("# ===== Kafka instance configuration for application.properties ==========================");
             // get kafka
             String bootstrapServerUrl = getBootstrapServerUrl();
             // load SA from file

@@ -17,6 +17,7 @@
 //SOURCES service/registry/ServiceRegistryDTO.java
 //SOURCES service/registry/ServiceRegistryUtils.java
 //SOURCES service/registry/ServiceRegistryCommand.java
+//SOURCES service/registry/ServiceRegistryConfigCommand.java
 //SOURCES service/registry/ServiceRegistryCreateCommand.java
 //SOURCES service/registry/ServiceRegistryDeleteCommand.java
 //SOURCES service/registry/ServiceRegistryDescribeCommand.java
@@ -25,7 +26,9 @@
 //SOURCES service/registry/artifact/ServiceRegistryArtifactCreateCommand.java
 //SOURCES service/registry/artifact/ServiceRegistryArtifactGetCommand.java
 //SOURCES service/registry/artifact/ServiceRegistryArtifactDeleteCommand.java
+//SOURCES service/registry/artifact/ServiceRegistryArtifactDownloadCommand.java
 //SOURCES service/registry/artifact/ServiceRegistryArtifactListCommand.java
+//SOURCES service/registry/artifact/ServiceRegistryArtifactUpdateCommand.java
 //SOURCES conf/KafkaConfigCommand.java
 //SOURCES exception/NoKafkaInstanceFoundException.java
 //SOURCES KafkaTopicCommand.java
