@@ -24,7 +24,7 @@ public class KafkaTopicCommand implements Callable<Integer> {
     }
 }
 
-@Command(name = "create", mixinStandardHelpOptions = true)
+@Command(name = "create", mixinStandardHelpOptions = true, description = "Create a topic")
 class KafkaTopicCreateCommand extends CustomCommand implements Callable<Integer> {
 
     private static final String DEFAULT_RETENTION_MS = "86400000"; // 24 hours in milliseconds
@@ -94,7 +94,7 @@ class KafkaTopicCreateCommand extends CustomCommand implements Callable<Integer>
 
 }
 
-@Command(name = "list", mixinStandardHelpOptions = true)
+@Command(name = "list", mixinStandardHelpOptions = true, description = "List all topics")
 class KafkaTopicListCommand extends CustomCommand implements Callable<Integer> {
 
     private final ApiClient apiInstanceClient;
@@ -142,7 +142,7 @@ class KafkaTopicListCommand extends CustomCommand implements Callable<Integer> {
     }
 }
 
-@Command(name = "delete", mixinStandardHelpOptions = true)
+@Command(name = "delete", mixinStandardHelpOptions = true, description = "Delete a topic")
 class KafkaTopicDeleteCommand extends CustomCommand implements Callable<Integer> {
 
     private final TopicsApi apiInstanceTopic;

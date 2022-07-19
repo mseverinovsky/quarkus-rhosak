@@ -20,7 +20,7 @@ public class ServiceAccountCommand implements Callable<Integer> {
     }
 }
 
-@Command(name = "create", mixinStandardHelpOptions = true)
+@Command(name = "create", mixinStandardHelpOptions = true, description = "Create a service account")
 class ServiceAccountCreateCommand extends CustomCommand implements Callable<Integer> {
     private final com.openshift.cloud.api.kas.auth.invoker.ApiClient apiInstanceClient;
     private final SecurityApi securityAPI;
@@ -63,7 +63,7 @@ class ServiceAccountCreateCommand extends CustomCommand implements Callable<Inte
     }
 }
 
-@Command(name = "list", mixinStandardHelpOptions = true)
+@Command(name = "list", mixinStandardHelpOptions = true, description = "List all service accounts")
 class ServiceAccountListCommand implements Callable<Integer> {
 
     private final SecurityApi securityAPI;
@@ -83,7 +83,7 @@ class ServiceAccountListCommand implements Callable<Integer> {
     }
 }
 
-@Command(name = "delete", mixinStandardHelpOptions = true)
+@Command(name = "delete", mixinStandardHelpOptions = true, description = "Delete a service account")
 class ServiceAccountDeleteCommand implements Callable<Integer> {
 
     private final SecurityApi securityAPI;
@@ -106,7 +106,7 @@ class ServiceAccountDeleteCommand implements Callable<Integer> {
     }
 }
 
-@Command(name = "reset-credentials", mixinStandardHelpOptions = true)
+@Command(name = "reset-credentials", mixinStandardHelpOptions = true, description = "Reset service account credentials")
 class ServiceAccountResetCredentialsCommand extends CustomCommand implements Callable<Integer> {
 
     private final SecurityApi securityAPI;
