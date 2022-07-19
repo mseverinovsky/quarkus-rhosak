@@ -125,14 +125,26 @@ class ServiceAccountDescribeCommand implements Callable<Integer> {
     public Integer call() {
         try {
             ServiceAccount serviceAccount = securityAPI.getServiceAccountById(id);
-            System.out.println(serviceAccount.toString()
-                    .replaceFirst("class ServiceAccount \\{","\n===== Service Account =====")
+            System.out.print("\n============= Service Account =============");
+            String saLines = serviceAccount.toString()
+                    .replaceFirst("class ServiceAccount \\{","")
                     .replaceAll("\\n[\\s]+","\n")
-                    .replaceFirst("\\}","")
-            );
+                    .replaceFirst("\\}","");
+            String[] lines = saLines.split("\\n");
+            for (String line : lines) {
+                int n = line.indexOf(':');
+                if (n > 0) line = " ".repeat(20 - n) + line;
+                System.out.println(line);
+            }
         } catch (ApiException e) {
-            throw new RuntimeException(e);
+            if (e.getMessage().contains("\"reason\":\"service account not found")) {
+                System.err.println(">>> Service account not found! Id: " + id);
+                return -1;
+            } else {
+                throw new RuntimeException(e);
+            }
         }
+
         return 0;
     }
 }

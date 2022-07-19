@@ -45,14 +45,14 @@ class ServiceRegistryDescribeCommand extends CustomCommand implements Callable<I
             );
 
             if (res == null || res.size() == 0) {
-                System.err.printf(">>> Registry with id='%s' not found!\n", id);
+                System.err.println(">>> Service registry not found! Id: " + id);
                 return -1;
             }
-            System.out.println(" ============= Service Registry ============= ");
-            res.entrySet().forEach(System.out::println);
+            System.out.println("============= Service Registry ============= ");
+            res.forEach((key, value) -> System.out.printf("%20s: %s\n", key, value));
         } catch (com.openshift.cloud.api.kas.auth.invoker.ApiException e) {
             if (e.getCode() == 404) {
-                System.err.printf(">>> Registry with id='%s' not found!\n", id);
+                System.err.println(">>> Service registry not found! Id: " + id);
                 return -1;
             } else {
                 throw new RuntimeException(e);
