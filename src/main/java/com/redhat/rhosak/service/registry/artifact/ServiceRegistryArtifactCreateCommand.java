@@ -70,10 +70,15 @@ public class ServiceRegistryArtifactCreateCommand extends CustomCommand implemen
                     serviceRegistry.getId(), artifactsMap.get("id"));
         } catch (ApiException e) {
             if (e.getCode() == 400) {
-                String msg = ">>> Failed to discover artifact type from content";
-                if (e.getMessage().contains(msg)) {
-                    System.err.println(msg);
-                    System.err.println(">>> Please specify artifact type explicitly (--type XML, AVRO, JSON, etc.) ");
+                String msgUnableToExtractParameter =
+                        "Unable to extract parameter from http request: javax.ws.rs.HeaderParam(\\\"X-Registry-ArtifactType\\\")";
+                String msgFailedToDiscoverArtifactType = "Failed to discover artifact type from content";
+                if (e.getMessage().contains(msgUnableToExtractParameter)) {
+                    System.err.println(">>> " + msgUnableToExtractParameter + " value is '" + artifactType + "'");
+                    System.err.println(">>> Please specify correct artifact type (XML, AVRO, JSON, etc.)");
+                } else if (e.getMessage().contains(msgFailedToDiscoverArtifactType)) {
+                    System.err.println(">>> " + msgFailedToDiscoverArtifactType);
+                    System.err.println(">>> Please specify artifact type explicitly (--type XML, AVRO, JSON, etc.)");
                 } else {
                     System.err.println(e.getLocalizedMessage());
                 }
