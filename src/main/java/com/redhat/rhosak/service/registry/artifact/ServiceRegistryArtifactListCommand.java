@@ -16,7 +16,7 @@ import java.util.concurrent.Callable;
 import static com.redhat.rhosak.KafkaManagementClient.API_CLIENT_BASE_PATH;
 
 @CommandLine.Command(name = "list", mixinStandardHelpOptions = true, description = "List all artifacts")
-class ServiceRegistryArtifactListCommand extends CustomCommand implements Callable<Integer> {
+public class ServiceRegistryArtifactListCommand extends CustomCommand implements Callable<Integer> {
 
     private final String ARTIFACT_LIST_URL = "/apis/registry/v2/search/artifacts?group=default";
     private final ApiClient apiInstanceClient;

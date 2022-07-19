@@ -17,12 +17,15 @@ import java.util.Map;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "create", mixinStandardHelpOptions = true, description = "Create new artifact")
-class ServiceRegistryArtifactCreateCommand extends CustomCommand implements Callable<Integer> {
+public class ServiceRegistryArtifactCreateCommand extends CustomCommand implements Callable<Integer> {
 
     private final ApiClient apiInstanceClient;
 
     @CommandLine.Option(names = "--file", paramLabel = "string", description = "File location of the artifact")
     String fileName;
+
+    @CommandLine.Option(names = "--type", paramLabel = "string", description = "Type of artifact")
+    String artifactType;
 
     public ServiceRegistryArtifactCreateCommand() {
         this.apiInstanceClient = KafkaInstanceClient.getKafkaInstanceAPIClient();
@@ -34,7 +37,7 @@ class ServiceRegistryArtifactCreateCommand extends CustomCommand implements Call
         String body;
         try {
             if (fileName == null) {
-                // read from System.in
+                // read the artifact from System.in
                 body = new String(System.in.readAllBytes());
             } else {
                 // read the artifact from file
@@ -44,6 +47,12 @@ class ServiceRegistryArtifactCreateCommand extends CustomCommand implements Call
             throw new RuntimeException(e);
         }
 
+        final String artifactTypeRequestHeader = "X-Registry-Artifacttype";
+        Map<String, String> headerParams = new HashMap<>();
+        if (artifactType != null) {
+            // Add artifact type Header
+            headerParams.put(artifactTypeRequestHeader, artifactType);
+        }
         ServiceRegistryDTO serviceRegistry = ServiceRegistryUtils.getServiceRegistry();
         String registryUrl = serviceRegistry.getRegistryUrl();
         apiInstanceClient.setBasePath(registryUrl);
@@ -52,7 +61,7 @@ class ServiceRegistryArtifactCreateCommand extends CustomCommand implements Call
         try {
             Map<String, Object> artifactsMap = apiInstanceClient.invokeAPI(
                     ARTIFACT_CREATE_URL, "POST", null, body,
-                    new HashMap<>(), new HashMap<>(), new HashMap<>(), ACCEPT_APPLICATION_JSON, CONTENT_TYPE_APPLICATION_JSON,
+                    headerParams, new HashMap<>(), new HashMap<>(), ACCEPT_APPLICATION_JSON, CONTENT_TYPE_APPLICATION_JSON,
                     new String[]{"Bearer"}, new GenericType<>() {}
             );
             System.out.println(">>> Artifact created");
@@ -60,7 +69,16 @@ class ServiceRegistryArtifactCreateCommand extends CustomCommand implements Call
             System.out.printf("https://console.redhat.com/application-services/service-registry/t/%s/artifacts/default/%s/versions/1\n",
                     serviceRegistry.getId(), artifactsMap.get("id"));
         } catch (ApiException e) {
-            e.printStackTrace();
+            if (e.getCode() == 400) {
+                String msg = ">>> Failed to discover artifact type from content";
+                if (e.getMessage().contains(msg)) {
+                    System.err.println(msg);
+                    System.err.println(">>> Please specify artifact type explicitly (--type XML, AVRO, JSON, etc.) ");
+                } else {
+                    System.err.println(e.getLocalizedMessage());
+                }
+            }
+            return -1;
         }
 
         return 0;

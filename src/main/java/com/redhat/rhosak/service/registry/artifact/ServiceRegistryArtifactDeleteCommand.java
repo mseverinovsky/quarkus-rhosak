@@ -13,7 +13,7 @@ import java.util.HashMap;
 import java.util.concurrent.Callable;
 
 @CommandLine.Command(name = "delete", mixinStandardHelpOptions = true, description = "Delete the artifact")
-class ServiceRegistryArtifactDeleteCommand extends CustomCommand implements Callable<Integer> {
+public class ServiceRegistryArtifactDeleteCommand extends CustomCommand implements Callable<Integer> {
 
     private final ApiClient apiInstanceClient;
 

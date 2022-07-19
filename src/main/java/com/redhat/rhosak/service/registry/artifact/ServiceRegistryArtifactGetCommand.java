@@ -19,7 +19,7 @@ import static com.redhat.rhosak.KafkaManagementClient.API_CLIENT_BASE_PATH;
 
 @CommandLine.Command(name = "get", mixinStandardHelpOptions = true,
         description = "Get an artifact from the registry based on the artifact ID")
-class ServiceRegistryArtifactGetCommand extends CustomCommand implements Callable<Integer> {
+public class ServiceRegistryArtifactGetCommand extends CustomCommand implements Callable<Integer> {
 
     private final String ARTIFACT_GET_URL = "/apis/registry/v2/groups/default/artifacts/";
     private final ApiClient apiInstanceClient;
