@@ -25,6 +25,7 @@ public class CustomCommand {
     public static final String SERVICE_REGISTRY_MGMT_URL = "/api/serviceregistry_mgmt/v1/registries";
 
     public static final String ACCEPT_APPLICATION_JSON = "application/json";
+    public static final String ACCEPT_APPLICATION_OCTET_STREAM = "application/octet-stream";
     public static final String CONTENT_TYPE_APPLICATION_JSON = "application/json";
     public static final String APPLICATION_X_WWW_FORM_URLENCODED = "application/x_www_form_urlencoded";
 
@@ -39,15 +40,6 @@ public class CustomCommand {
         Path saFile = Path.of(RhosakFiles.SA_FILE_NAME + "." + fileFormat);
         serviceAccount.setCreatedAt(null); // otherwise .rhosak_sa file will be broken
         objectMapper.writeValue(saFile.toFile(), serviceAccount);
-    }
-
-    protected String rhosakApiToken() {
-        try {
-            RhoasTokens tokens = objectMapper.readValue(Path.of(RhosakFiles.RHOSAK_API_CREDS_FILE_NAME + ".json").toFile(), RhoasTokens.class);
-            return tokens.getAccess_token();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     protected String getServerUrl() throws NoKafkaInstanceFoundException {
