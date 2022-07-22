@@ -29,6 +29,7 @@
 //SOURCES service/registry/artifact/ServiceRegistryArtifactDownloadCommand.java
 //SOURCES service/registry/artifact/ServiceRegistryArtifactListCommand.java
 //SOURCES service/registry/artifact/ServiceRegistryArtifactUpdateCommand.java
+//SOURCES service/registry/artifact/ServiceRegistryArtifactMetadataGetCommand.java
 //SOURCES conf/KafkaConfigCommand.java
 //SOURCES exception/NoKafkaInstanceFoundException.java
 //SOURCES KafkaTopicCommand.java
