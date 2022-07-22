@@ -8,7 +8,7 @@ import java.util.concurrent.Callable;
         ServiceRegistryArtifactCreateCommand.class, ServiceRegistryArtifactGetCommand.class,
         ServiceRegistryArtifactDeleteCommand.class, ServiceRegistryArtifactDownloadCommand.class,
         ServiceRegistryArtifactListCommand.class, ServiceRegistryArtifactUpdateCommand.class,
-        ServiceRegistryArtifactMetadataGetCommand.class},
+        ServiceRegistryArtifactMetadataGetCommand.class, ServiceRegistryArtifactMetadataSetCommand.class},
         description = "Manage Service Registry schema and API artifacts")
 public class ServiceRegistryArtifactCommand implements Callable<Integer> {
 

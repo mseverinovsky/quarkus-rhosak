@@ -1,5 +1,6 @@
 package com.redhat.rhosak;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.openshift.cloud.api.kas.DefaultApi;
 import com.openshift.cloud.api.kas.SecurityApi;
@@ -11,9 +12,11 @@ import com.redhat.rhosak.exception.NoKafkaInstanceFoundException;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 
+import javax.ws.rs.core.GenericType;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -23,6 +26,7 @@ public class CustomCommand {
 
     public static final String OPENID_AUTH_URL = "/auth/realms/rhoas/protocol/openid_connect/token";
     public static final String SERVICE_REGISTRY_MGMT_URL = "/api/serviceregistry_mgmt/v1/registries";
+    private static final String ARTIFACT_METADATA_URL = "/apis/registry/v2/groups/default/artifacts/%s/meta";
 
     public static final String ACCEPT_APPLICATION_JSON = "application/json";
     public static final String ACCEPT_APPLICATION_OCTET_STREAM = "application/octet-stream";
@@ -33,6 +37,34 @@ public class CustomCommand {
         this.objectMapper = new ObjectMapper();
         ApiClient apiManagementClient = KafkaManagementClient.getKafkaManagementAPIClient();
         this.managementApi = new DefaultApi(apiManagementClient);
+    }
+
+    protected Map<String, Object> getArtifactMetadata(String registryUrl, Object artifactId,
+                                                      com.openshift.cloud.api.kas.auth.invoker.ApiClient apiInstanceClient)
+            throws com.openshift.cloud.api.kas.auth.invoker.ApiException {
+        apiInstanceClient.setBasePath(registryUrl);
+        String url = String.format(ARTIFACT_METADATA_URL, artifactId);
+        return apiInstanceClient.invokeAPI(
+                url, "GET", null, null,
+                new HashMap<>(), new HashMap<>(), new HashMap<>(), ACCEPT_APPLICATION_JSON, APPLICATION_X_WWW_FORM_URLENCODED,
+                new String[]{"Bearer"}, new GenericType<>() {}
+        );
+    }
+
+    protected int printArtifactMetadata(String id, LinkedHashMap<String, Object> map, Map<String, Object> artifactsMap)
+            throws JsonProcessingException {
+        if (artifactsMap == null || artifactsMap.size() == 0) {
+            System.err.println(">>> No artifacts found!");
+            return -1;
+        } else {
+            String registryId = (String) map.get("id");
+            System.out.println("=================================================");
+            System.out.println("Registry ID: " + registryId);
+            System.out.println("Artifact ID: " + id);
+            System.out.println("=================================================");
+            System.out.println(new ObjectMapper().writerWithDefaultPrettyPrinter().writeValueAsString(artifactsMap));
+        }
+        return 0;
     }
 
     protected void saveServiceAccountToFile(com.openshift.cloud.api.kas.auth.invoker.ApiClient apiInstanceClient,

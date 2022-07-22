@@ -16,9 +16,9 @@ import java.util.concurrent.Callable;
 
 import static com.redhat.rhosak.KafkaManagementClient.API_CLIENT_BASE_PATH;
 
-@CommandLine.Command(name = "metadata-get", mixinStandardHelpOptions = true,
-        description = "Get the metadata for an artifact in a Service Registry instance.")
-public class ServiceRegistryArtifactMetadataGetCommand extends CustomCommand implements Callable<Integer> {
+@CommandLine.Command(name = "metadata-set", mixinStandardHelpOptions = true,
+        description = "Update the metadata for an artifact in a Service Registry instance.")
+public class ServiceRegistryArtifactMetadataSetCommand extends CustomCommand implements Callable<Integer> {
 
     private final String ARTIFACT_METADATA_URL = "/apis/registry/v2/groups/default/artifacts/%s/meta";
     private final ApiClient apiInstanceClient;
@@ -26,7 +26,13 @@ public class ServiceRegistryArtifactMetadataGetCommand extends CustomCommand imp
     @CommandLine.Option(names = "--artifact-id", paramLabel = "string", required = true, description = "ID of the artifact")
     String artifactId;
 
-    public ServiceRegistryArtifactMetadataGetCommand() {
+    @CommandLine.Option(names = "--description", paramLabel = "string", description = "Custom description of the artifact")
+    String description;
+
+    @CommandLine.Option(names = "--name", paramLabel = "string", description = "Custom name of the artifact")
+    String name;
+
+    public ServiceRegistryArtifactMetadataSetCommand() {
         this.apiInstanceClient = KafkaInstanceClient.getKafkaInstanceAPIClient();
     }
 
@@ -49,13 +55,30 @@ public class ServiceRegistryArtifactMetadataGetCommand extends CustomCommand imp
                 LinkedHashMap<String, Object> map = ((ArrayList<LinkedHashMap<String, Object>>)serviceRegistryResultMap.get("items")).get(0);
                 // Get registry Url
                 String registryUrl = (String) map.get("registryUrl");
+                apiInstanceClient.setBasePath(registryUrl);
 
-                Map<String, Object> artifactsMap = getArtifactMetadata(registryUrl, artifactId, apiInstanceClient);
-                return printArtifactMetadata(artifactId, map, artifactsMap);
+                String url = String.format(ARTIFACT_METADATA_URL, artifactId);
+                Map<String, Object> formParametersMap = new HashMap<>();
+                if (name != null) formParametersMap.put("name", name);
+                if (description != null) formParametersMap.put("description", description);
+
+                String result = apiInstanceClient.invokeAPI(
+                        url, "PUT", null, formParametersMap,
+                        new HashMap<>(), new HashMap<>(), new HashMap<>(), ACCEPT_APPLICATION_JSON, CONTENT_TYPE_APPLICATION_JSON,
+                        new String[]{"Bearer"}, new GenericType<>() {}
+                );
+                if (result == null) {
+                    System.out.println(">>> Artifact metadata updated!");
+
+                    Map<String, Object> artifactsMap = getArtifactMetadata(registryUrl, artifactId, apiInstanceClient);
+                    return printArtifactMetadata(artifactId, map, artifactsMap);
+                }
             }
         } catch (ApiException | JsonProcessingException e) {
             throw new RuntimeException(e);
         }
+
+        return 0;
     }
 }
 
