@@ -56,9 +56,17 @@ public class ServiceRegistryArtifactListCommand extends CustomCommand implements
                     return -1;
                 } else {
                     ArrayList<LinkedHashMap<String, String>> artifacts = (ArrayList<LinkedHashMap<String, String>>) artifactsMap.get("artifacts");
-                    for (LinkedHashMap<String, String> o : artifacts) {
-                        System.out.println("============================================");
-                        o.entrySet().forEach(System.out::println);
+                    System.out.printf("  ID (%3d)                               NAME        CREATED ON                 CREATED BY                       TYPE   STATE\n", artifacts.size());
+                    System.out.println(" -------------------------------------- ----------- -------------------------- -------------------------------- ------ ---------");
+                    for (LinkedHashMap<String, String> item : artifacts) {
+                        System.out.printf("  %36s %11s   %s   %s  %5s   %s\n",
+                                item.get("id"),
+                                (item.get("name") == null) ? "" : item.get("name"),
+                                item.get("createdOn"),
+                                item.get("createdBy"),
+                                item.get("type"),
+                                item.get("state")
+                        );
                     }
                 }
             }
