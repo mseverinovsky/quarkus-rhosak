@@ -12,7 +12,7 @@ import java.util.concurrent.Callable;
 
 import static com.redhat.rhosak.KafkaManagementClient.API_CLIENT_BASE_PATH;
 
-@CommandLine.Command(name = "describe", mixinStandardHelpOptions = true, description = "Describe a Service Registry instance.")
+@CommandLine.Command(name = "describe", aliases = {"get"}, mixinStandardHelpOptions = true, description = "Describe a Service Registry instance.")
 class ServiceRegistryDescribeCommand extends CustomCommand implements Callable<Integer> {
 
     @CommandLine.Option(names = "--id", paramLabel = "string", required = true, description = "Unique ID of the Service Registry instance")

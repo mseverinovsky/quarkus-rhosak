@@ -37,7 +37,7 @@ public class ServiceRegistryArtifactDeleteCommand extends CustomCommand implemen
                     new HashMap<>(), new HashMap<>(), new HashMap<>(), ACCEPT_APPLICATION_JSON, CONTENT_TYPE_APPLICATION_JSON,
                     new String[]{"Bearer"}, new GenericType<>() {}
             );
-            System.out.println(">>> Artifact deleted: " + artifactId);
+            System.out.println(">>> Artifact deleted. Id: " + artifactId);
         } catch (ApiException e) {
             e.printStackTrace();
         }

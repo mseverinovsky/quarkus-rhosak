@@ -126,7 +126,7 @@ class ServiceAccountDeleteCommand implements Callable<Integer> {
     }
 }
 
-@Command(name = "describe", mixinStandardHelpOptions = true, description = "View configuration details for a service account")
+@Command(name = "describe", aliases = {"get"}, mixinStandardHelpOptions = true, description = "View configuration details for a service account")
 class ServiceAccountDescribeCommand implements Callable<Integer> {
 
     private final SecurityApi securityAPI;
