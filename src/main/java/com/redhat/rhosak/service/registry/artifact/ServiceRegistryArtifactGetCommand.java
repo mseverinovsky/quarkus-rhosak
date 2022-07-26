@@ -24,7 +24,7 @@ public class ServiceRegistryArtifactGetCommand extends CustomCommand implements 
     private final String ARTIFACT_GET_URL = "/apis/registry/v2/groups/default/artifacts/";
     private final ApiClient apiInstanceClient;
 
-    @CommandLine.Option(names = "--artifact-id", paramLabel = "string", required = true, description = "ID of the artifact")
+    @CommandLine.Option(names = {"--artifact-id", "--id"}, paramLabel = "string", required = true, description = "ID of the artifact")
     String artifactId;
 
     public ServiceRegistryArtifactGetCommand() {

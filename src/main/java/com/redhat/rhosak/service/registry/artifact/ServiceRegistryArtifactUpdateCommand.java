@@ -21,7 +21,7 @@ public class ServiceRegistryArtifactUpdateCommand extends CustomCommand implemen
 
     private final ApiClient apiInstanceClient;
 
-    @CommandLine.Option(names = "--artifact-id", required = true, paramLabel = "string", description = "ID of the artifact")
+    @CommandLine.Option(names = {"--artifact-id", "--id"}, required = true, paramLabel = "string", description = "ID of the artifact")
     String artifactId;
 
     @CommandLine.Option(names = "--file", paramLabel = "string", description = "File location of the artifact")

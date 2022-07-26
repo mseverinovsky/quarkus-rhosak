@@ -23,7 +23,7 @@ public class ServiceRegistryArtifactMetadataSetCommand extends CustomCommand imp
     private final String ARTIFACT_METADATA_URL = "/apis/registry/v2/groups/default/artifacts/%s/meta";
     private final ApiClient apiInstanceClient;
 
-    @CommandLine.Option(names = "--artifact-id", paramLabel = "string", required = true, description = "ID of the artifact")
+    @CommandLine.Option(names = {"--artifact-id", "--id"}, paramLabel = "string", required = true, description = "ID of the artifact")
     String artifactId;
 
     @CommandLine.Option(names = "--description", paramLabel = "string", description = "Custom description of the artifact")
