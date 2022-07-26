@@ -31,7 +31,7 @@ public class ServiceRegistryArtifactDownloadCommand extends CustomCommand implem
     @CommandLine.Option(names = "--global-id", paramLabel = "int", description = "Global ID of the artifact")
     String globalId;
 
-    @CommandLine.Option(names = "--output-file", paramLabel = "string", description = "File location of the artifact")
+    @CommandLine.Option(names = {"--output-file", "-o"}, paramLabel = "string", description = "File location of the artifact")
     String outputFile;
 
     public ServiceRegistryArtifactDownloadCommand() {

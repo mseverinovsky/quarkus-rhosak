@@ -38,7 +38,7 @@ class ServiceAccountCreateCommand extends CustomCommand implements Callable<Inte
     @CommandLine.Option(names = "--name", paramLabel = "string", description = "Service account name")
     String name;
 
-    @CommandLine.Option(names = "--short-description", paramLabel = "string", description = "Short description of the service account")
+    @CommandLine.Option(names = {"--short-description", "--descr"}, paramLabel = "string", description = "Short description of the service account")
     String shortDescription;
 
     @Override
@@ -166,7 +166,7 @@ class ServiceAccountDescribeCommand implements Callable<Integer> {
     }
 }
 
-@Command(name = "reset-credentials", mixinStandardHelpOptions = true, description = "Reset service account credentials")
+@Command(name = "reset-credentials", aliases = {"reset"}, mixinStandardHelpOptions = true, description = "Reset service account credentials")
 class ServiceAccountResetCredentialsCommand extends CustomCommand implements Callable<Integer> {
 
     private final SecurityApi securityAPI;

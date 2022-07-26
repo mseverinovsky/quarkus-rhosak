@@ -24,10 +24,10 @@ public class ServiceRegistryArtifactUpdateCommand extends CustomCommand implemen
     @CommandLine.Option(names = {"--artifact-id", "--id"}, required = true, paramLabel = "string", description = "ID of the artifact")
     String artifactId;
 
-    @CommandLine.Option(names = "--file", paramLabel = "string", description = "File location of the artifact")
+    @CommandLine.Option(names = {"--file", "-f"}, paramLabel = "string", description = "File location of the artifact")
     String fileName;
 
-    @CommandLine.Option(names = "--type", paramLabel = "string", description = "Type of artifact")
+    @CommandLine.Option(names = {"--type", "-t"}, paramLabel = "string", description = "Type of artifact")
     String artifactType;
 
     public ServiceRegistryArtifactUpdateCommand() {
