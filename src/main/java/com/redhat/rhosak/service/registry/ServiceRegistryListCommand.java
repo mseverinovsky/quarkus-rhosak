@@ -45,11 +45,12 @@ class ServiceRegistryListCommand extends CustomCommand implements Callable<Integ
                 System.err.println(">>> No Service Registries found!");
                 return -1;
             } else {
-                System.err.println(">>> Response items count: " + ((ArrayList)res.get("items")).size());
+                System.err.println(">>> Service registries count: " + ((ArrayList)res.get("items")).size());
                 System.out.println("===================================================");
             }
             for (LinkedHashMap<String, Object> item : (ArrayList<LinkedHashMap<String, Object>>)res.get("items")) {
-                item.forEach((key, value) -> System.out.printf("%20s : %s\n", key, value));
+                item.forEach((key, value) -> System.out.printf("%20s: %s\n", key, value));
+                System.out.println("---------------------------------------------------");
             }
         } catch (com.openshift.cloud.api.kas.auth.invoker.ApiException e) {
             throw new RuntimeException(e);

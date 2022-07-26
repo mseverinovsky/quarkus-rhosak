@@ -3,11 +3,13 @@ package com.redhat.rhosak;
 import com.openshift.cloud.api.kas.SecurityApi;
 import com.openshift.cloud.api.kas.invoker.ApiException;
 import com.openshift.cloud.api.kas.models.ServiceAccount;
+import com.openshift.cloud.api.kas.models.ServiceAccountListItem;
 import com.openshift.cloud.api.kas.models.ServiceAccountRequest;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.Callable;
 
 @Command(name = "service-account", mixinStandardHelpOptions = true,
@@ -75,11 +77,29 @@ class ServiceAccountListCommand implements Callable<Integer> {
     @Override
     public Integer call() {
         try {
-            System.out.println(securityAPI.getServiceAccounts(null).getItems());
+            List<ServiceAccountListItem> list = securityAPI.getServiceAccounts(null).getItems();
+            System.err.println(">>> Service accounts count: " + list.size());
+            System.out.println("===================================================");
+            list.forEach(item -> {
+                prettyPrintItem(item);
+                System.out.println("---------------------------------------------------");
+            });
         } catch (ApiException e) {
             throw new RuntimeException(e);
         }
+
         return 0;
+    }
+
+    private static void prettyPrintItem(ServiceAccountListItem item) {
+        System.out.println("         id: " + item.getId());
+        System.out.println("       kind: " + item.getKind());
+        System.out.println("       href: " + item.getHref());
+        System.out.println("   clientId: " + item.getClientId());
+        System.out.println("       name: " + item.getName());
+        System.out.println("  createdBy: " + item.getCreatedBy());
+        System.out.println("  createdAt: " + item.getCreatedAt());
+        System.out.println("description: " + item.getDescription());
     }
 }
 
