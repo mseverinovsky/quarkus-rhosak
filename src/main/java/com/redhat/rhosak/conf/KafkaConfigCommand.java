@@ -19,7 +19,6 @@ public class KafkaConfigCommand extends CustomCommand implements Callable<Intege
     public Integer call() {
 
         try {
-            System.out.println("# ===== Kafka instance configuration for application.properties ==========================");
             // get kafka
             String bootstrapServerUrl = getBootstrapServerUrl();
             // load SA from file
@@ -34,10 +33,13 @@ public class KafkaConfigCommand extends CustomCommand implements Callable<Intege
                 "  username=\"%s\" \\\n" +
                 "  password=\"%s\";\n";
 
+            System.out.println("# ===== Kafka instance configuration for application.properties ==========================");
             System.out.printf(configFormat, bootstrapServerUrl, client_id, client_secret);
 
-        } catch (IOException | NoKafkaInstanceFoundException e) {
+        } catch (IOException e) {
             e.printStackTrace();
+        } catch (NoKafkaInstanceFoundException e) {
+            System.err.println(e.getLocalizedMessage());
         }
 
         return 0;

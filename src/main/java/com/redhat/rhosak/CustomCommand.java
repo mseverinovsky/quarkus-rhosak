@@ -82,7 +82,7 @@ public class CustomCommand {
         try {
             List<KafkaRequest> list = managementApi.getKafkas(null, null, null, null).getItems();
             if (list.isEmpty()) {
-                throw new NoKafkaInstanceFoundException("No Kafka instance found");
+                throw new NoKafkaInstanceFoundException(">>> No Kafka instance found");
             }
             return list.get(0).getBootstrapServerHost();
         } catch (ApiException e) {
