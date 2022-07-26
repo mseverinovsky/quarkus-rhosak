@@ -35,9 +35,6 @@ class ServiceAccountCreateCommand extends CustomCommand implements Callable<Inte
 
     @CommandLine.Option(names = "--name", paramLabel = "string", description = "Service account name")
     String name;
-    @CommandLine.Option(names = "--file-format", paramLabel = "string", defaultValue = "json",
-            description = "Format in which to save the service account credentials (default: \"json\")")
-    String fileFormat;
 
     @CommandLine.Option(names = "--short-description", paramLabel = "string", description = "Short description of the service account")
     String shortDescription;
@@ -46,7 +43,7 @@ class ServiceAccountCreateCommand extends CustomCommand implements Callable<Inte
     public Integer call() {
         try {
             ServiceAccount serviceAccount = createServiceAccount(name, shortDescription);
-            saveServiceAccountToFile(apiInstanceClient, serviceAccount, fileFormat);
+            saveServiceAccountToFile(apiInstanceClient, serviceAccount);
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage());
         }
@@ -158,10 +155,6 @@ class ServiceAccountResetCredentialsCommand extends CustomCommand implements Cal
     @CommandLine.Option(names = "--id", paramLabel = "string", required = true, description = "The unique ID of the service account to reset credentials")
     String id;
 
-    @CommandLine.Option(names = "--file-format", paramLabel = "string", defaultValue = "json",
-            description = "Format of the service account credentials file (default: \"json\")")
-    String fileFormat;
-
     public ServiceAccountResetCredentialsCommand() {
         this.securityAPI = new SecurityApi(KafkaManagementClient.getKafkaManagementAPIClient());
         this.apiInstanceClient = KafkaInstanceClient.getKafkaInstanceAPIClient();
@@ -171,7 +164,7 @@ class ServiceAccountResetCredentialsCommand extends CustomCommand implements Cal
     public Integer call() {
         try {
             ServiceAccount serviceAccount = securityAPI.resetServiceAccountCreds(id);
-            saveServiceAccountToFile(apiInstanceClient, serviceAccount, fileFormat);
+            saveServiceAccountToFile(apiInstanceClient, serviceAccount);
         } catch (ApiException | IOException e) {
             System.err.println("ApiException: " + e.getLocalizedMessage());
         }

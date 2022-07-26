@@ -73,6 +73,7 @@ public class Rhosak implements Callable<Integer> {
     }
 
     public static void storeTokenResponse(KeycloakInstalled keycloak) throws IOException {
+        System.out.println(">>> Storing the access token...");
         Path tokensPath = Path.of(RhosakFiles.DEFAULT_CREDENTIALS_FILENAME);
         RhoasTokens rhoasTokens = new RhoasTokens();
         rhoasTokens.refresh_token = keycloak.getRefreshToken();

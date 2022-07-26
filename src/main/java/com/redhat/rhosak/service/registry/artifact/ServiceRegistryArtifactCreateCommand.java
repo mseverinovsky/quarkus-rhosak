@@ -64,10 +64,16 @@ public class ServiceRegistryArtifactCreateCommand extends CustomCommand implemen
                     headerParams, new HashMap<>(), new HashMap<>(), ACCEPT_APPLICATION_JSON, CONTENT_TYPE_APPLICATION_JSON,
                     new String[]{"Bearer"}, new GenericType<>() {}
             );
+            String registryId = serviceRegistry.getId();
+            String artifactId = (String) artifactsMap.get("id");
             System.out.println(">>> Artifact created");
+            System.out.println("=================================================");
+            System.out.println("Registry ID: " + registryId);
+            System.out.println("Artifact ID: " + artifactId);
+            System.out.println("=================================================");
             System.out.println("You can view or manage this artifact in your browser by accessing:");
             System.out.printf("https://console.redhat.com/application-services/service-registry/t/%s/artifacts/default/%s/versions/1\n",
-                    serviceRegistry.getId(), artifactsMap.get("id"));
+                    registryId, artifactId);
         } catch (ApiException e) {
             if (e.getCode() == 400) {
                 String msgUnableToExtractParameter =

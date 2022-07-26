@@ -53,6 +53,7 @@ public class KafkaManagementClient {
             if (storedTokens != null && storedTokens.accessTokenIsValidFor(MIN_TOKEN_VALIDITY)) {
                 accessToken = storedTokens.getAccess_token();
             } else if (storedTokens != null && storedTokens.refreshTokenIsValidFor(MIN_TOKEN_VALIDITY)) {
+                System.out.println(">>> Refreshing the access token...");
                 keycloak.refreshToken(storedTokens.getRefresh_token());
                 Rhosak.storeTokenResponse(keycloak);
                 accessToken = keycloak.getTokenString();

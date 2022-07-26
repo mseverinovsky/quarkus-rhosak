@@ -22,9 +22,8 @@ import java.util.Map;
 
 public class CustomCommand {
     private final ObjectMapper objectMapper;
-    private final DefaultApi managementApi;
+//    private final DefaultApi managementApi;
 
-    public static final String OPENID_AUTH_URL = "/auth/realms/rhoas/protocol/openid_connect/token";
     public static final String SERVICE_REGISTRY_MGMT_URL = "/api/serviceregistry_mgmt/v1/registries";
     private static final String ARTIFACT_METADATA_URL = "/apis/registry/v2/groups/default/artifacts/%s/meta";
 
@@ -35,8 +34,8 @@ public class CustomCommand {
 
     public CustomCommand() {
         this.objectMapper = new ObjectMapper();
-        ApiClient apiManagementClient = KafkaManagementClient.getKafkaManagementAPIClient();
-        this.managementApi = new DefaultApi(apiManagementClient);
+//        ApiClient apiManagementClient = KafkaManagementClient.getKafkaManagementAPIClient();
+//        this.managementApi = new DefaultApi(apiManagementClient);
     }
 
     protected Map<String, Object> getArtifactMetadata(String registryUrl, Object artifactId,
@@ -68,8 +67,9 @@ public class CustomCommand {
     }
 
     protected void saveServiceAccountToFile(com.openshift.cloud.api.kas.auth.invoker.ApiClient apiInstanceClient,
-                                            ServiceAccount serviceAccount, String fileFormat) throws IOException {
-        Path saFile = Path.of(RhosakFiles.SA_FILE_NAME + "." + fileFormat);
+                                            ServiceAccount serviceAccount) throws IOException {
+        System.out.println(">>> Saving Service account...");
+        Path saFile = Path.of(RhosakFiles.SA_FILE_NAME);
         serviceAccount.setCreatedAt(null); // otherwise .rhosak_sa file will be broken
         objectMapper.writeValue(saFile.toFile(), serviceAccount);
     }
@@ -80,9 +80,11 @@ public class CustomCommand {
 
     protected String getBootstrapServerUrl() throws NoKafkaInstanceFoundException {
         try {
+            ApiClient apiManagementClient = KafkaManagementClient.getKafkaManagementAPIClient();
+            DefaultApi managementApi = new DefaultApi(apiManagementClient);
             List<KafkaRequest> list = managementApi.getKafkas(null, null, null, null).getItems();
             if (list.isEmpty()) {
-                throw new NoKafkaInstanceFoundException(">>> No Kafka instance found");
+                throw new NoKafkaInstanceFoundException(">>> No Kafka instance found!");
             }
             return list.get(0).getBootstrapServerHost();
         } catch (ApiException e) {

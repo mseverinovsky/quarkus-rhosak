@@ -4,6 +4,7 @@ import com.openshift.cloud.api.kas.DefaultApi;
 import com.openshift.cloud.api.kas.invoker.ApiException;
 import com.openshift.cloud.api.kas.models.Error;
 import com.openshift.cloud.api.kas.models.KafkaRequest;
+import com.openshift.cloud.api.kas.models.KafkaRequestList;
 import com.openshift.cloud.api.kas.models.KafkaRequestPayload;
 import com.redhat.rhosak.acl.KafkaAclCommand;
 import com.redhat.rhosak.conf.KafkaConfigCommand;
@@ -81,7 +82,12 @@ class KafkaListCommand implements Callable<Integer> {
     @Override
     public Integer call() {
         try {
-            System.out.println(managementAPI.getKafkas(null, null, null, null).getItems());
+            KafkaRequestList kafkaRequestList = managementAPI.getKafkas(null, null, null, null);
+            if (kafkaRequestList.getItems().isEmpty()) {
+                System.err.println(">>> No Kafka instance found!");
+                return -1;
+            }
+            System.out.println(kafkaRequestList.getItems());
         } catch (ApiException e) {
             throw new RuntimeException(e.getMessage());
         }
