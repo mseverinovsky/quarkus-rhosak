@@ -28,7 +28,7 @@ public class KafkaAclDeleteCommand  extends CustomCommand implements Callable<In
     @CommandLine.Option(names = "--permission", paramLabel = "string", required = true, description = "Set the ACL permission. Choose from: \"allow\", \"deny\"")
     String permission;
 
-    @CommandLine.Option(names = "--service-account", paramLabel = "string", defaultValue = "*", description = "Service account client ID used as principal for this operation")
+    @CommandLine.Option(names = "--service-account", paramLabel = "string", description = "Service account client ID used as principal for this operation")
     String serviceAccountId;
 
     @CommandLine.Option(names = "--topic", paramLabel = "string", defaultValue = "*", description = "Set the topic resource")
