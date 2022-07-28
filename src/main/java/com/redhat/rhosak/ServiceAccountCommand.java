@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.concurrent.Callable;
 
 @Command(name = "service-account", mixinStandardHelpOptions = true,
+        description = "Create, list, describe, delete service accounts",
         subcommands = {ServiceAccountCreateCommand.class, ServiceAccountListCommand.class,
                 ServiceAccountResetCredentialsCommand.class, ServiceAccountDescribeCommand.class,
                 ServiceAccountDeleteCommand.class})

@@ -7,6 +7,7 @@ import picocli.CommandLine.Command;
 import java.util.concurrent.Callable;
 
 @Command(name = "service-registry", mixinStandardHelpOptions = true,
+        description = "Service Registry commands",
         subcommands = {ServiceRegistryArtifactCommand.class, ServiceRegistryConfigCommand.class,
                 ServiceRegistryCreateCommand.class, ServiceRegistryDeleteCommand.class,
                 ServiceRegistryDescribeCommand.class, ServiceRegistryListCommand.class})
