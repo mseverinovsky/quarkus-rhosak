@@ -85,7 +85,7 @@ public class Rhosak implements Callable<Integer> {
     }
 
     public static ServiceAccount loadServiceAccountFromFile() throws IOException {
-        File saFile = Path.of(RhosakFiles.SA_FILE_NAME + ".json").toFile();
+        File saFile = Path.of(RhosakFiles.SA_FILE_NAME).toFile();
         if (!saFile.exists()) {
             throw new FileNotFoundException(saFile + " does not exist");
         }
