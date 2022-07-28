@@ -3,12 +3,12 @@
 jbang ./Rhosak.java --help
 ```
 ---
-## Kafka Login
+### Kafka Login
 ```shell script
 jbang ./Rhosak.java login
 ```
 ---
-## Kafka management
+### Kafka management
 ```shell script
 jbang ./Rhosak.java kafka
 ```
@@ -25,14 +25,14 @@ jbang ./Rhosak.java kafka delete --id [id]
 jbang ./Rhosak.java kafka config
 ```
 ---
-## Kafka topics management
+### Kafka topics management
 ```shell script
 jbang ./Rhosak.java kafka topic create --name [name]
 jbang ./Rhosak.java kafka topic list
 jbang ./Rhosak.java kafka topic delete --name [name]
 ```
 ---
-## Service account management
+### Service account management
 ```shell script
 jbang ./Rhosak.java service-account create --file-format [json]
 jbang ./Rhosak.java service-account list
@@ -41,7 +41,7 @@ jbang ./Rhosak.java service-account describe --id [id]
 jbang ./Rhosak.java service-account delete --id [id]
 ```
 ---
-## Kafka ACL management
+### Kafka ACL management
 In order to deal with ACLs you need to grant admin's privileges to the service account with 'rhoas'  first
 ```
 Ex.: rhoas kafka acl grant-admin --all-accounts
