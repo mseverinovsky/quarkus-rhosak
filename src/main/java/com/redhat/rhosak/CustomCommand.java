@@ -137,10 +137,10 @@ public class CustomCommand {
         ServiceAccount sa;
         if (serviceAccountId == null) {
             try {
-                System.out.println("No principal specified. Trying to load from file ...");
+                System.out.println(">>> No principal specified. Trying to load from file ...");
                 sa = Rhosak.loadServiceAccountFromFile();
                 if (!checkServiceAccountExists(sa.getId())) {
-                    System.err.println("Principal not found. Id: " + sa.getId());
+                    System.err.println(">>> Principal not found. Id: " + sa.getId());
                     return null;
                 }
             } catch (IOException e) {
@@ -149,14 +149,11 @@ public class CustomCommand {
             }
         } else {
             sa = getServiceAccountById(serviceAccountId);
-//            System.err.println(serviceAccountId);
-//            System.err.println(sa);
             if (sa == null) {
-                System.err.println("Principal not found. Id: " + serviceAccountId);
+                System.err.println(">>> Principal not found. Id: " + serviceAccountId);
                 return null;
             }
         }
-
         principal = "User:" + sa.getName();
 //        principal = "User:" + sa.getId();
 

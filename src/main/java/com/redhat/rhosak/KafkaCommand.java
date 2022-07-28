@@ -119,7 +119,7 @@ class KafkaDeleteCommand implements Callable<Integer> {
             }
         } catch (ApiException e) {
             if (e.getCode() == 404 ) {
-                System.err.println("Kafka instance not found. Id: " + kafkaId);
+                System.err.println(">>> Kafka instance not found. Id: " + kafkaId);
             } else {
                 throw new RuntimeException(e.getMessage(), e);
             }

@@ -187,7 +187,7 @@ class ServiceAccountResetCredentialsCommand extends CustomCommand implements Cal
             ServiceAccount serviceAccount = securityAPI.resetServiceAccountCreds(id);
             saveServiceAccountToFile(apiInstanceClient, serviceAccount);
         } catch (ApiException | IOException e) {
-            System.err.println("ApiException: " + e.getLocalizedMessage());
+            System.err.println(">>> ApiException: " + e.getLocalizedMessage());
         }
         return 0;
     }
